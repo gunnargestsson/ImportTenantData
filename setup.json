@@ -1,0 +1,7 @@
+﻿{
+    "branchId":  "601cfb28-477f-4f1a-a894-2ff1dd8a4aa5",
+    "dockerImage":  "mcr.microsoft.com/businesscentral/sandbox",
+    "navVersion":  "14.0.0.0",
+    "navSolution":  "W1",
+    "projectName":  "ImportTenantData"
+}    
