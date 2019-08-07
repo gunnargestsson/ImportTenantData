@@ -3,6 +3,8 @@ table 60320 "Import Data Source"
     DataClassification = SystemMetadata;
     Caption = 'Import Data Source';
     DataCaptionFields = Description;
+    LookupPageId = "Import Data Sources";
+    DrillDownPageId = "Import Data Sources";
 
     fields
     {

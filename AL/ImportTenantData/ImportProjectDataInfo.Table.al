@@ -1,6 +1,7 @@
 table 60304 "Import Project Data Info"
 {
     DataClassification = SystemMetadata;
+    Caption = 'Import Project Data Info';
 
     fields
     {
@@ -10,9 +11,9 @@ table 60304 "Import Project Data Info"
             Caption = 'ID';
             NotBlank = true;
         }
-        field(2; "Table Id"; Integer)
+        field(2; "Table ID"; Integer)
         {
-            Caption = 'Table Id';
+            Caption = 'Table ID';
             DataClassification = SystemMetadata;
             NotBlank = true;
         }
@@ -41,7 +42,7 @@ table 60304 "Import Project Data Info"
     keys
     {
 
-        key(PK; ID, "Table Id")
+        key(PK; ID)
         {
             Clustered = true;
         }

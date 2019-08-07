@@ -12,8 +12,8 @@
                                "startupObjectType":  "Page",
                                "breakOnError":  true,
                                "launchBrowser":  true,
-                               "schemaUpdateMode":"Synchronize"
-                                                        },
+                               "schemaUpdateMode": "Synchronize"
+                           },
                            {
                             "type":  "al",
                             "request":  "launch",

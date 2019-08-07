@@ -59,6 +59,13 @@ page 60301 "Import Project Card"
                 Provider = FileList;
                 SubPageLink = ID = field (ID);
             }
+            part(MappingInfo; "Import Project Data Map. Part")
+            {
+                ApplicationArea = All;
+                Caption = 'Mapping Details';
+                Provider = FileList;
+                SubPageLink = "Project ID" = field ("Project ID"), ID = field (ID);
+            }
         }
     }
     actions

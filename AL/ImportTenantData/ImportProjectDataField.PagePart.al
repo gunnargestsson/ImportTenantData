@@ -13,11 +13,11 @@ page 60307 "Import Project Data Field Part"
         {
             repeater(General)
             {
-                field("Xml Field ID"; "Xml Field ID")
+                field("Field ID"; "Field ID")
                 {
                     ApplicationArea = All;
                 }
-                field("Xml Field Name"; "Xml Field Name")
+                field("Field Name"; "Field Name")
                 {
                     ApplicationArea = All;
                 }

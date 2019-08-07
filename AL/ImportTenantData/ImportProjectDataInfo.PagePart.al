@@ -9,7 +9,7 @@ page 60306 "Import Project Data Info Part"
     {
         area(content)
         {
-            field("Table Id"; "Table Id")
+            field("Table ID"; "Table ID")
             {
                 ApplicationArea = All;
             }

@@ -68,8 +68,10 @@ codeunit 60330 "Azure Blob JSON Connect"
     var
         TempBlob: Record TempBlob;
     begin
+        Window.Open(ImportMsg + '\\#1###################################');
         if BlobList.FindSet() then
             repeat
+                Window.Update(1, BlobList."File Name");
                 ImportProjectData."File Name" := BlobList."File Name";
                 ImportProjectData."Last Modified" := CreateDateTime(BlobList."Modified Date", BlobList."Modified Time");
                 ImportProjectData."Content Length" := BlobList."Content Length";
@@ -78,6 +80,7 @@ codeunit 60330 "Azure Blob JSON Connect"
                 ImportProjectData.Insert(true);
                 Commit();
             until BlobList.Next() = 0;
+        Window.Close();
     end;
 
     local procedure GetBlob(Setup: Record "Azure Blob Connect Setup"; FileName: Text; var TempBlob: Record Tempblob)
@@ -132,5 +135,6 @@ codeunit 60330 "Azure Blob JSON Connect"
         ImportMsg: Label 'Importing File';
         AzureBlobJSONInterfaceErr: Label 'Azure Blob JSON interface not found';
         AzureBlobConnect: Label 'Azure Blob Connect', MaxLength = 50;
+
 
 }

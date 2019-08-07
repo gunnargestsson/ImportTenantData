@@ -45,6 +45,48 @@ table 60302 "Import Project Data"
             DataClassification = SystemMetadata;
             Caption = 'Fact Boxes Populated';
         }
+        field(20; "No. of Table Mappings"; Integer)
+        {
+            Caption = 'No. of Table Mappings';
+            FieldClass = FlowField;
+            Editable = false;
+            CalcFormula = count ("Import Project Table Mapping" where ("Project Table ID" = field (ID)));
+        }
+        field(21; "No. of Field Mappings"; Integer)
+        {
+            Caption = 'No. of Field Mappings';
+            FieldClass = FlowField;
+            Editable = false;
+            CalcFormula = count ("Import Project Field Mapping" where ("Project Table ID" = field (ID), "Destination Field ID" = filter ('>0')));
+        }
+        field(30; "Missing Record Handling"; Option)
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Missing Record Handling';
+            OptionMembers = Create,Skip;
+            OptionCaption = 'Create,Skip';
+        }
+        field(42; "Table ID"; Integer)
+        {
+            Caption = 'Table ID';
+            FieldClass = FlowField;
+            Editable = false;
+            CalcFormula = lookup ("Import Project Data Info"."Table ID" where (ID = field (ID)));
+        }
+        field(43; "Table Name"; Text[30])
+        {
+            Caption = 'Table Name';
+            FieldClass = FlowField;
+            Editable = false;
+            CalcFormula = lookup ("Import Project Data Info".Name where (ID = field (ID)));
+        }
+        field(44; "Table Caption"; Text[50])
+        {
+            Caption = 'Caption';
+            FieldClass = FlowField;
+            Editable = false;
+            CalcFormula = lookup ("Import Project Data Info".Caption where (ID = field (ID)));
+        }
     }
 
     keys
@@ -74,9 +116,13 @@ table 60302 "Import Project Data"
     var
         DataInfo: Record "Import Project Data Info";
         DataField: Record "Import Project Data Field";
+        DataTableMapping: Record "Import Project Table Mapping";
+        DataFieldMapping: Record "Import Project Field Mapping";
     begin
         DataInfo.DeleteInfo(ID);
         DataField.DeleteFields(ID);
+        DataTableMapping.DeleteTableMapping(ID);
+        DataFieldMapping.DeleteFieldMapping(ID);
     end;
 
     trigger OnRename()
@@ -94,7 +140,7 @@ table 60302 "Import Project Data"
         FileMgt.BLOBExport(TempBlob, "File Name", true);
     end;
 
-    procedure LoadXml(var Xml: XmlDocument)
+    procedure GetXml(var Xml: XmlDocument)
     var
         InStr: InStream;
     begin
@@ -110,5 +156,24 @@ table 60302 "Import Project Data"
         XmlMetadata.Run(Rec);
         "Fact Boxes Populated" := true;
         Modify();
+    end;
+
+    procedure GetJobQueueEntryStatus(): Text
+    var
+        JobQueueEntry: Record "Job Queue Entry";
+    begin
+        JobQueueEntry.SetRange("Record ID to Process", RecordId());
+        if JobQueueEntry.FindFirst() then
+            exit(Format(JobQueueEntry.Status));
+    end;
+
+    procedure JobQueueEntryDrillDown()
+    var
+        JobQueueEntry: Record "Job Queue Entry";
+        PageMgt: Codeunit "Page Management";
+    begin
+        JobQueueEntry.SetRange("Record ID to Process", RecordId());
+        if JobQueueEntry.FindFirst() then
+            Page.Run(PageMgt.GetDefaultCardPageID(Database::"Job Queue Entry"), JobQueueEntry);
     end;
 }
