@@ -59,6 +59,7 @@ page 60310 "Import Project Table Mappings"
             part(FieldMapping; "Import Project Field Map. Part")
             {
                 ApplicationArea = All;
+                Caption = 'Fields';
                 SubPageLink = "Project Table ID" = field ("Project Table ID"), "Destination Table ID" = field ("Destination Table ID");
             }
         }

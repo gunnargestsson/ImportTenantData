@@ -88,6 +88,62 @@ page 60301 "Import Project Card"
                     PopulateFactboxes();
                 end;
             }
+            action("ExportXml")
+            {
+                ApplicationArea = All;
+                Caption = 'Export Mapping Xml';
+                Image = Export;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                Scope = "Repeater";
+                ToolTip = 'Export the selected upgrade project mapping configuration to Xml file.';
+
+                trigger OnAction()
+                var
+                    ImportProjectData: Record "Import Project Data";
+                    TempBlob: Record TempBlob;
+                    FileMgt: Codeunit "File Management";
+                    Xml: XmlPort "Export Project Mapping XmlPort";
+                    OutStr: OutStream;
+                begin
+                    TempBlob.Blob.CreateOutStream(OutStr);
+                    ImportProjectData.SetRange("Project ID", ID);
+                    Xml.SetTableView(ImportProjectData);
+                    xml.SetDestination(OutStr);
+                    Xml.Export();
+                    FileMgt.BLOBExport(TempBlob, FileMgt.GetSafeFileName(StrSubstNo(DefaultFileNameTxt, Description)), true);
+                end;
+            }
+            action("ImportXml")
+            {
+                ApplicationArea = All;
+                Caption = 'Import Mapping Xml';
+                Image = Import;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                Scope = "Page";
+                ToolTip = 'Import an import project mapping configuration from an Xml file.';
+
+                trigger OnAction()
+                var
+                    ImportProjectData: Record "Import Project Data";
+                    TempBlob: Record TempBlob;
+                    FileMgt: Codeunit "File Management";
+                    Xml: XmlPort "Import Project Mapping XmlPort";
+                    InStr: InStream;
+                begin
+                    FileMgt.BLOBImport(TempBlob, FileMgt.GetSafeFileName(StrSubstNo(DefaultFileNameTxt, Description)));
+                    TempBlob.Blob.CreateInStream(InStr);
+                    Xml.SetSource(InStr);
+                    Xml.SetProjectID(ID);
+                    Xml.Import();
+                end;
+            }
+
         }
     }
+    var
+        DefaultFileNameTxt: Label '%1-MappingConfiguration.xml';
 }
