@@ -9,7 +9,7 @@ table 60331 "Azure Blob Connect List"
 
     fields
     {
-        field(1; "File Path"; Text[1024])
+        field(1; "File Path"; Text[250])
         {
             DataClassification = SystemMetadata;
             Caption = 'File Path';

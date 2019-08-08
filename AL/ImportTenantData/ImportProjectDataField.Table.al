@@ -136,12 +136,12 @@ table 60305 "Import Project Data Field"
             Caption = 'Access By Permission Mask';
             BlankZero = true;
         }
-        field(30; "Option String"; Text[2048])
+        field(30; "Option String"; Text[250])
         {
             DataClassification = SystemMetadata;
             Caption = 'Option String';
         }
-        field(31; "Option Caption"; Text[2048])
+        field(31; "Option Caption"; Text[250])
         {
             DataClassification = SystemMetadata;
             Caption = 'Option Caption';
