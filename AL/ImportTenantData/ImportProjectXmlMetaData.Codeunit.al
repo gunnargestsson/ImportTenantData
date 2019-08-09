@@ -77,7 +77,7 @@ codeunit 60306 "Import Project Xml MetaData"
         end;
     end;
 
-    local procedure GetCaptionValue(CaptionAttributeValue: Text) LocalCaption: Text[50];
+    local procedure GetCaptionValue(CaptionAttributeValue: Text) LocalCaption: Text[250];
     var
         Language: Record Language;
         Captions: List of [Text];
