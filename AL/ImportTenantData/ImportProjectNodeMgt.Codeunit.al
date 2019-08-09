@@ -42,13 +42,36 @@ codeunit 60305 "Import Project Node Mgt."
     end;
 
     procedure FindNodeDateTimeValue(XmlSearchNode: XmlNode; NodeName: Text) NodeValue: DateTime
+    var
+        Fieldvalue: Text;
     begin
-        if not Evaluate(NodeValue, FindNodeTextValue(XmlSearchNode, NodeName), 9) then exit(0DT);
+        Fieldvalue := FindNodeTextValue(XmlSearchNode, NodeName);
+        if Fieldvalue in ['', '1753-01-01T00:00:00'] then exit(0DT);
+        if not Evaluate(NodeValue, Fieldvalue, 9) then exit(0DT);
     end;
 
     procedure FindNodeDateValue(XmlSearchNode: XmlNode; NodeName: Text) NodeValue: Date
+    var
+        Fieldvalue: Text;
     begin
-        exit(DT2Date(FindNodeDateTimeValue(XmlSearchNode, NodeName)));
+        Fieldvalue := FindNodeTextValue(XmlSearchNode, NodeName);
+        if FieldValue = '1753-01-01T00:00:00' then
+            exit(0D);
+        evaluate(NodeValue, CopyStr(FieldValue, 1, 10), 9);
+        if CopyStr(FieldValue, 12, 8) = '23:59:59' then
+            NodeValue := ClosingDate(NodeValue);
+    end;
+
+    procedure FindNodeTimeValue(XmlSearchNode: XmlNode; NodeName: Text; var NodeValue: Time) TimeValueFound: Boolean
+    var
+        Fieldvalue: Text;
+    begin
+        Fieldvalue := FindNodeTextValue(XmlSearchNode, NodeName);
+        if FieldValue = '1753-01-01T00:00:00' then
+            exit(false);
+        FieldValue := CopyStr(FieldValue, 12);
+        evaluate(NodeValue, FieldValue);
+        exit(true);
     end;
 
     procedure FindNodeGuidValue(XmlSearchNode: XmlNode; NodeName: Text) NodeValue: Guid
@@ -68,11 +91,6 @@ codeunit 60305 "Import Project Node Mgt."
     procedure FindAttributeDecimalValue(XmlSearchNode: XmlNode; AttributeName: Text) AttributeValue: Decimal
     begin
         if not Evaluate(AttributeValue, FindAttributeTextValue(XmlSearchNode, AttributeName), 9) then exit(0);
-    end;
-
-    procedure FindAttributeDateTimeValue(XmlSearchNode: XmlNode; AttributeName: Text) AttributeValue: DateTime
-    begin
-        if not Evaluate(AttributeValue, FindAttributeTextValue(XmlSearchNode, AttributeName), 9) then exit(0DT);
     end;
 
     procedure GetNodeXPath(NodeName: Text): Text
