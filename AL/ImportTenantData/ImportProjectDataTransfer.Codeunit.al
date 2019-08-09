@@ -166,7 +166,10 @@ codeunit 60321 "Import Project Data Transfer"
         ImportProjectFieldMapping: Record "Import Project Field Mapping";
         ImportProjectDataBuffer: Record "Import Project Data Buffer" temporary;
         DataBufferFldRef: FieldRef;
+        Handled: Boolean;
     begin
+        OnBeforeCopyValue(ImportProjectFieldMapping, SrcFldValueAsText, DestFldRef, Handled);
+        if Handled then exit;
         ImportProjectDataBuffer.Insert(true);
         with ImportProjectFieldMapping do begin
             Get(ImportProjectField.ID, ImportProjectField."Field ID", DestinationTableId);
@@ -378,6 +381,12 @@ codeunit 60321 "Import Project Data Transfer"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeInsert(ImportProjectTableMapping: Record "Import Project Table Mapping"; SrcRec: XmlNode; var DestRecRef: RecordRef)
+    begin
+
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCopyValue(ImportProjectFieldMapping: Record "Import Project Field Mapping"; SrcFldValueAsText: Text; var DestFldRef: FieldRef; var Handled: Boolean)
     begin
 
     end;
