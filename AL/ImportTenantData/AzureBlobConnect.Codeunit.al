@@ -42,7 +42,7 @@ codeunit 60330 "Azure Blob JSON Connect"
         if ImportSourceMgt.GetCodeunitID(GetAzureBlobJSONInterfaceCodeunitName()) = 0 then
             error(AzureBlobJSONInterfaceErr);
 
-        SetConfiguration(Setup."Account Name", Setup."Container Name", Setup.GetPassword(Setup."Private Key ID"), JObject);
+        SetConfiguration(Setup."Account Name", Setup."Container Name", Setup.GetPassword(Setup."Access Key ID"), JObject);
         JObject.Add('Method', 'ListBlob');
         JObject.WriteTo(JSON);
         Tempblob.WriteAsText(JSON, TextEncoding::UTF8);
@@ -90,7 +90,7 @@ codeunit 60330 "Azure Blob JSON Connect"
         JToken: JsonToken;
         JSON: Text;
     begin
-        SetConfiguration(Setup."Account Name", Setup."Container Name", Setup.GetPassword(Setup."Private Key ID"), JObject);
+        SetConfiguration(Setup."Account Name", Setup."Container Name", Setup.GetPassword(Setup."Access Key ID"), JObject);
         JObject.Add('Method', 'GetBlob');
         JObject.Add('Url', 'https://' + Setup."Account Name" + '.blob.core.windows.net/' + Setup."Container Name" + '/' + FileName);
         JObject.WriteTo(JSON);

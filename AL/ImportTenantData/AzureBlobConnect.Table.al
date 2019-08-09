@@ -26,11 +26,11 @@ table 60330 "Azure Blob Connect Setup"
             Caption = 'Container Name';
             NotBlank = true;
         }
-        field(4; "Private Key ID"; guid)
+        field(4; "Access Key ID"; guid)
         {
             DataClassification = SystemMetadata;
             TableRelation = "Service Password".Key;
-            Caption = 'Private Key ID';
+            Caption = 'Access Key ID';
         }
     }
 
@@ -55,7 +55,7 @@ table 60330 "Azure Blob Connect Setup"
 
     trigger OnDelete()
     begin
-        DeletePassword("Private Key ID");
+        DeletePassword("Access Key ID");
     end;
 
     trigger OnRename()
@@ -67,7 +67,7 @@ table 60330 "Azure Blob Connect Setup"
     begin
         TestField("Account Name");
         TestField("Container Name");
-        if not HasPassword("Private Key ID") then
+        if not HasPassword("Access Key ID") then
             error(PrivateKeyMissingErr);
     end;
 
@@ -113,6 +113,6 @@ table 60330 "Azure Blob Connect Setup"
     end;
 
     var
-        PrivateKeyMissingErr: Label 'Private Key is missing';
+        PrivateKeyMissingErr: Label 'Access Key is missing';
 
 }
