@@ -101,7 +101,7 @@ codeunit 60321 "Import Project Data Transfer"
     local procedure UpdateImportedRecords(ImportProjectData: Record "Import Project Data"; var ImportProjectTableMapping: Record "Import Project Table Mapping"; Counter: Integer; Total: Integer)
     begin
         ImportProjectTableMapping."No. of Records" := Total;
-        ImportProjectTableMapping."No. of Records" := Counter;
+        ImportProjectTableMapping."No. of Imported Records" := Counter;
 
         case ImportProjectData."Commit Interval" of
             ImportProjectData."Commit Interval"::"Every record":
