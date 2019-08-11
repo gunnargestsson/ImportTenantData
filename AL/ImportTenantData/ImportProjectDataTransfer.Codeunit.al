@@ -94,8 +94,8 @@ codeunit 60321 "Import Project Data Transfer"
             UpdateImportedRecords(ImportProjectData, ImportProjectTableMapping, Counter, Total);
             if Counter MOD 100 = 0 then
                 Window.Update(3, Round(Counter / Total * 10000, 1));
-            ImportProjectTableMapping.Modify();
         end;
+        ImportProjectTableMapping.Modify();
     end;
 
     local procedure UpdateImportedRecords(ImportProjectData: Record "Import Project Data"; var ImportProjectTableMapping: Record "Import Project Table Mapping"; Counter: Integer; Total: Integer)
