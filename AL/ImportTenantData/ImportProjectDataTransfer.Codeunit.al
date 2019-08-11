@@ -98,7 +98,7 @@ codeunit 60321 "Import Project Data Transfer"
         end;
     end;
 
-    local procedure UpdateImportedRecords(ImportProjectData: Record "Import Project Data"; ImportProjectTableMapping: Record "Import Project Table Mapping"; Counter: Integer; Total: Integer)
+    local procedure UpdateImportedRecords(ImportProjectData: Record "Import Project Data"; var ImportProjectTableMapping: Record "Import Project Table Mapping"; Counter: Integer; Total: Integer)
     begin
         ImportProjectTableMapping."No. of Records" := Total;
         ImportProjectTableMapping."No. of Records" := Counter;
