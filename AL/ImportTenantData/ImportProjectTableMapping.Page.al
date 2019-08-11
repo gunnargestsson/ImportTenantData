@@ -31,6 +31,16 @@ page 60310 "Import Project Table Mappings"
                     ApplicationArea = All;
                     QuickEntry = false;
                 }
+                field("No. of Imported Records"; "No. of Imported Records")
+                {
+                    ApplicationArea = All;
+                    Editable = false;
+                }
+                field("No. of Records"; "No. of Records")
+                {
+                    ApplicationArea = All;
+                    Editable = false;
+                }
                 field(TemplateRecord; Format("Template Record"))
                 {
                     ApplicationArea = All;

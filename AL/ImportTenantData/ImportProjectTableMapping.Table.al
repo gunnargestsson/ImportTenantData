@@ -51,6 +51,16 @@ table 60310 "Import Project Table Mapping"
             DataClassification = EndUserIdentifiableInformation;
             Caption = 'Template Record';
         }
+        field(40; "No. of Records"; Integer)
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'No. of Records';
+        }
+        field(41; "No. of Imported Records"; Integer)
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'No. of Imported Records';
+        }
     }
 
     keys

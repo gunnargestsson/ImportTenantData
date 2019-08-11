@@ -66,6 +66,13 @@ table 60302 "Import Project Data"
             OptionMembers = Create,Skip;
             OptionCaption = 'Create,Skip';
         }
+        field(31; "Commit Interval"; Option)
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Commit Interval';
+            OptionMembers = None,"Every record","Every 100 records","Every 1.000 records","Every 10.000 records";
+            OptionCaption = 'None,Every record,Every 100 records,Every 1.000 records,Every 10.000 records';
+        }
         field(42; "Table ID"; Integer)
         {
             Caption = 'Table ID';

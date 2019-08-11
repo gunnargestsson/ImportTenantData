@@ -10,6 +10,17 @@ codeunit 60321 "Import Project Data Transfer"
     end;
 
     procedure ExecuteDataTransfer(var ImportProjectData: Record "Import Project Data")
+    begin
+        StartDataTransfer(ImportProjectData, false);
+    end;
+
+    procedure ResumeDataTransfer(var ImportProjectData: Record "Import Project Data")
+    begin
+        StartDataTransfer(ImportProjectData, true);
+
+    end;
+
+    local procedure StartDataTransfer(var ImportProjectData: Record "Import Project Data"; ResumeTransfer: Boolean)
     var
         StartTime: DateTime;
         Total: Integer;
@@ -26,14 +37,14 @@ codeunit 60321 "Import Project Data Transfer"
                 Window.Update(1, "Table Name");
                 Window.Update(2, Round(Counter / Total * 10000, 1));
                 Window.Update(3, 0);
-                ExecuteDataTransferForTable(ImportProjectData);
+                ExecuteDataTransferForTable(ImportProjectData, ResumeTransfer);
             until Next() = 0;
         end;
         Window.Close();
         Message(DataImportFinished, (RoundDateTime(CurrentDateTime) - StartTime));
     end;
 
-    local procedure ExecuteDataTransferForTable(ImportProjectData: Record "Import Project Data")
+    local procedure ExecuteDataTransferForTable(ImportProjectData: Record "Import Project Data"; ResumeTransfer: Boolean)
     var
         ImportProjectTableMapping: Record "Import Project Table Mapping";
         TemplateRecRef: RecordRef;
@@ -45,12 +56,12 @@ codeunit 60321 "Import Project Data Transfer"
             if FindSet() then
                 repeat
                     HasTemplateRecRef := TemplateRecRef.Get("Template Record");
-                    CopyData(ImportProjectData, ImportProjectTableMapping, HasTemplateRecRef, TemplateRecRef);
+                    CopyData(ImportProjectData, ImportProjectTableMapping, HasTemplateRecRef, TemplateRecRef, ResumeTransfer);
                 until Next() = 0;
         end;
     end;
 
-    local procedure CopyData(ImportProjectData: Record "Import Project Data"; ImportProjectTableMapping: Record "Import Project Table Mapping"; HasTemplateRecRef: Boolean; TemplateRecRef: RecordRef)
+    local procedure CopyData(ImportProjectData: Record "Import Project Data"; ImportProjectTableMapping: Record "Import Project Table Mapping"; HasTemplateRecRef: Boolean; TemplateRecRef: RecordRef; ResumeTransfer: Boolean)
     var
         SrcRowList: XmlNodeList;
         SrcRow: XmlNode;
@@ -62,24 +73,58 @@ codeunit 60321 "Import Project Data Transfer"
         Total := InitializeReferences(ImportProjectData, ImportProjectTableMapping, SrcRowList, DestRecRef);
         if Total = 0 then exit;
         foreach SrcRow in SrcRowList do begin
-            PopulatePrimaryKey(ImportProjectData.ID, SrcRow, DestRecRef);
-            UpdateRow := DestRecRef.Find();
-            if not UpdateRow then
-                DestRecRef.Init();
-            CopyFields(ImportProjectTableMapping, SrcRow, DestRecRef);
-            if HasTemplateRecRef then
-                ApplyTemplateRecord(TemplateRecRef, DestRecRef);
-            if UpdateRow then begin
-                OnBeforeModify(ImportProjectTableMapping, SrcRow, DestRecRef);
-                DestRecRef.Modify();
-            end else
-                if ImportProjectData."Missing Record Handling" = ImportProjectData."Missing Record Handling"::Create then begin
-                    OnBeforeInsert(ImportProjectTableMapping, SrcRow, DestRecRef);
-                    DestRecRef.Insert();
-                end;
+            if (Counter > ImportProjectTableMapping."No. of Imported Records") or not ResumeTransfer then begin
+                PopulatePrimaryKey(ImportProjectData.ID, SrcRow, DestRecRef);
+                UpdateRow := DestRecRef.Find();
+                if not UpdateRow then
+                    DestRecRef.Init();
+                CopyFields(ImportProjectTableMapping, SrcRow, DestRecRef);
+                if HasTemplateRecRef then
+                    ApplyTemplateRecord(TemplateRecRef, DestRecRef);
+                if UpdateRow then begin
+                    OnBeforeModify(ImportProjectTableMapping, SrcRow, DestRecRef);
+                    DestRecRef.Modify();
+                end else
+                    if ImportProjectData."Missing Record Handling" = ImportProjectData."Missing Record Handling"::Create then begin
+                        OnBeforeInsert(ImportProjectTableMapping, SrcRow, DestRecRef);
+                        DestRecRef.Insert();
+                    end;
+            end;
             Counter += 1;
+            UpdateImportedRecords(ImportProjectData, ImportProjectTableMapping, Counter, Total);
             if Counter MOD 100 = 0 then
                 Window.Update(3, Round(Counter / Total * 10000, 1));
+            ImportProjectTableMapping.Modify();
+        end;
+    end;
+
+    local procedure UpdateImportedRecords(ImportProjectData: Record "Import Project Data"; ImportProjectTableMapping: Record "Import Project Table Mapping"; Counter: Integer; Total: Integer)
+    begin
+        ImportProjectTableMapping."No. of Records" := Total;
+        ImportProjectTableMapping."No. of Records" := Counter;
+
+        case ImportProjectData."Commit Interval" of
+            ImportProjectData."Commit Interval"::"Every record":
+                begin
+                    ImportProjectTableMapping.Modify();
+                    Commit();
+                end;
+
+            ImportProjectData."Commit Interval"::"Every 100 records":
+                if Counter MOD 100 = 0 then begin
+                    ImportProjectTableMapping.Modify();
+                    Commit();
+                end;
+            ImportProjectData."Commit Interval"::"Every 1.000 records":
+                if Counter MOD 1000 = 0 then begin
+                    ImportProjectTableMapping.Modify();
+                    Commit();
+                end;
+            ImportProjectData."Commit Interval"::"Every 10.000 records":
+                if Counter MOD 10000 = 0 then begin
+                    ImportProjectTableMapping.Modify();
+                    Commit();
+                end;
         end;
     end;
 

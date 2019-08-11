@@ -33,6 +33,11 @@ page 60303 "Import Project Data Part"
                     ApplicationArea = All;
                     ToolTip = 'Specify the action to apply if destination record is not found';
                 }
+                field("Commit Interval"; "Commit Interval")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Commit Data during data transer according to this interval';
+                }
                 field("Job Queue Status"; GetJobQueueEntryStatus())
                 {
                     Caption = 'Job Queue Status';
@@ -121,6 +126,26 @@ page 60303 "Import Project Data Part"
                 begin
                     CurrPage.SetSelectionFilter(ImportProjectData);
                     ImportProjDataTrans.ExecuteDataTransfer(ImportProjectData);
+                end;
+            }
+            action("ResumeDataImport")
+            {
+                ApplicationArea = All;
+                Caption = 'Resume Data Import';
+                Image = DataEntry;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                Scope = Page;
+                ToolTip = 'Executed the selected data import method for the selected tables from the last committed record.';
+
+                trigger OnAction()
+                var
+                    ImportProjectData: Record "Import Project Data";
+                    ImportProjDataTrans: Codeunit "Import Project Data Transfer";
+                begin
+                    CurrPage.SetSelectionFilter(ImportProjectData);
+                    ImportProjDataTrans.ResumeDataTransfer(ImportProjectData);
                 end;
             }
             action("SceduleDataImport")
