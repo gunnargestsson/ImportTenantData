@@ -65,6 +65,7 @@ table 60302 "Import Project Data"
             Caption = 'Missing Record Handling';
             OptionMembers = Create,Skip;
             OptionCaption = 'Create,Skip';
+            InitValue = Skip;
         }
         field(31; "Commit Interval"; Option)
         {
