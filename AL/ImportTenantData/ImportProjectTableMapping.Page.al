@@ -4,6 +4,7 @@ page 60310 "Import Project Table Mappings"
     PageType = Card;
     SourceTable = "Import Project Table Mapping";
     Caption = 'Import Project Table Mappings';
+    ShowFilter = false;
 
     layout
     {
@@ -84,6 +85,7 @@ page 60310 "Import Project Table Mappings"
         ImportProjectDataInfo: Record "Import Project Data Info";
         AllObj: Record AllObj;
     begin
+        ProjectTableID := "Project Table ID";
         if IsEmpty() then
             if ImportProjectDataInfo.Get("Project Table ID") then
                 if AllObj.Get(AllObj."Object Type"::Table, ImportProjectDataInfo."Table ID") then begin
@@ -93,14 +95,11 @@ page 60310 "Import Project Table Mappings"
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)
-    var
-        Index: Integer;
     begin
-        for Index := 9 downto 0 do begin
-            FilterGroup(Index);
-            if GetFilter("Project Table ID") <> '' then
-                "Project Table ID" := GetRangeMax("Project Table ID");
-        end;
+        "Project Table ID" := ProjectTableID;
     end;
+
+    var
+        ProjectTableID: Guid;
 
 }
