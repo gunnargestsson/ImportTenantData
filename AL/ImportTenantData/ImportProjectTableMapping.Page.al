@@ -15,15 +15,16 @@ page 60310 "Import Project Table Mappings"
                 field("Destination Table ID"; "Destination Table ID")
                 {
                     ApplicationArea = All;
+                    trigger OnValidate()
+                    begin
+                        CurrPage.SaveRecord();
+                    end;
                 }
                 field("Destination Table Name"; "Destination Table Name")
                 {
                     ApplicationArea = All;
                     QuickEntry = false;
-                    trigger OnValidate()
-                    begin
-                        CurrPage.SaveRecord();
-                    end;
+
                 }
                 field("Destination Table Caption"; "Destination Table Caption")
                 {
