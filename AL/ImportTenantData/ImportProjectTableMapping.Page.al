@@ -20,6 +20,10 @@ page 60310 "Import Project Table Mappings"
                 {
                     ApplicationArea = All;
                     QuickEntry = false;
+                    trigger OnValidate()
+                    begin
+                        CurrPage.SaveRecord();
+                    end;
                 }
                 field("Destination Table Caption"; "Destination Table Caption")
                 {
