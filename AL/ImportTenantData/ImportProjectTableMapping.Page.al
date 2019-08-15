@@ -92,4 +92,15 @@ page 60310 "Import Project Table Mappings"
                 end;
     end;
 
+    trigger OnNewRecord(BelowxRec: Boolean)
+    var
+        Index: Integer;
+    begin
+        for Index := 9 downto 0 do begin
+            FilterGroup(Index);
+            if GetFilter("Project Table ID") <> '' then
+                "Project Table ID" := GetRangeMax("Project Table ID");
+        end;
+    end;
+
 }
