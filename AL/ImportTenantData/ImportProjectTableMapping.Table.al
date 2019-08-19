@@ -89,7 +89,7 @@ table 60310 "Import Project Table Mapping"
 
     trigger OnRename()
     begin
-
+        error(UnableToRenameErr)
     end;
 
     procedure DeleteTableMapping(DataID: Guid)
@@ -158,4 +158,6 @@ table 60310 "Import Project Table Mapping"
                     "Template Record" := RecRef.RecordId();
     end;
 
+    var
+        UnableToRenameErr: Label 'Unable to rename a table mapping, please recreate.';
 }

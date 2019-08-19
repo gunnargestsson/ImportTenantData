@@ -102,6 +102,7 @@ page 60303 "Import Project Data Part"
                 ToolTip = 'Configure the data mapping for the import data';
                 RunObject = page "Import Project Table Mappings";
                 RunPageLink = "Project Table ID" = field (ID);
+                RunPageMode = Edit;
 
                 trigger OnAction()
                 begin

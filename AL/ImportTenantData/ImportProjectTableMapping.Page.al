@@ -15,6 +15,7 @@ page 60310 "Import Project Table Mappings"
                 field("Destination Table ID"; "Destination Table ID")
                 {
                     ApplicationArea = All;
+                    DrillDownPageId = "All Objects with Caption";
                     trigger OnValidate()
                     begin
                         CurrPage.SaveRecord();
