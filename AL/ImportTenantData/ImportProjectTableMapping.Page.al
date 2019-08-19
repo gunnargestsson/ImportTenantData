@@ -84,11 +84,9 @@ page 60310 "Import Project Table Mappings"
     var
         ImportProjectDataInfo: Record "Import Project Data Info";
         AllObj: Record AllObj;
-        Index: Integer;
     begin
-        for Index := 9 downto 0 do
-            if GetFilter("Project Table ID") <> '' then
-                ProjectTableID := GetRangeMax("Project Table ID");
+        if GetFilter("Project Table ID") <> '' then
+            ProjectTableID := GetRangeMax("Project Table ID");
 
         if IsEmpty() then
             if ImportProjectDataInfo.Get("Project Table ID") then
