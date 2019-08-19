@@ -84,8 +84,12 @@ page 60310 "Import Project Table Mappings"
     var
         ImportProjectDataInfo: Record "Import Project Data Info";
         AllObj: Record AllObj;
+        Index: Integer;
     begin
-        ProjectTableID := "Project Table ID";
+        for Index := 9 downto 0 do
+            if GetFilter("Project Table ID") <> '' then
+                ProjectTableID := GetRangeMax("Project Table ID");
+
         if IsEmpty() then
             if ImportProjectDataInfo.Get("Project Table ID") then
                 if AllObj.Get(AllObj."Object Type"::Table, ImportProjectDataInfo."Table ID") then begin
@@ -96,7 +100,8 @@ page 60310 "Import Project Table Mappings"
 
     trigger OnNewRecord(BelowxRec: Boolean)
     begin
-        "Project Table ID" := ProjectTableID;
+        if not IsNullGuid(ProjectTableID) then
+            "Project Table ID" := ProjectTableID;
     end;
 
     var
