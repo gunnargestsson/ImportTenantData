@@ -72,8 +72,10 @@ codeunit 60321 "Import Project Data Transfer"
     begin
         Total := InitializeReferences(ImportProjectData, ImportProjectTableMapping, SrcRowList, DestRecRef);
         if Total = 0 then exit;
+
         foreach SrcRow in SrcRowList do begin
-            if (Counter > ImportProjectTableMapping."No. of Imported Records") or not ResumeTransfer then begin
+            Counter += 1;
+            if (Counter >= ImportProjectTableMapping."No. of Imported Records") or not ResumeTransfer then begin
                 PopulatePrimaryKey(ImportProjectData.ID, SrcRow, DestRecRef);
                 UpdateRow := DestRecRef.Find();
                 if not UpdateRow then
@@ -89,9 +91,10 @@ codeunit 60321 "Import Project Data Transfer"
                         OnBeforeInsert(ImportProjectTableMapping, SrcRow, DestRecRef);
                         DestRecRef.Insert();
                     end;
+
+                UpdateImportedRecords(ImportProjectData, ImportProjectTableMapping, Counter, Total);
             end;
-            Counter += 1;
-            UpdateImportedRecords(ImportProjectData, ImportProjectTableMapping, Counter, Total);
+
             if Counter MOD 100 = 0 then
                 Window.Update(3, Round(Counter / Total * 10000, 1));
         end;
