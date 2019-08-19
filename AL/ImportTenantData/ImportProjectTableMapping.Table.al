@@ -140,5 +140,22 @@ table 60310 "Import Project Table Mapping"
             until ImportDataField.Next() = 0;
     end;
 
+    procedure SelectTemplateRecord(PageEditable: Boolean)
+    var
+        PageMgt: Codeunit "Page Management";
+        DataTypeMgt: Codeunit "Data Type Management";
+        RecRef: RecordRef;
+        RecRelatedVariant: Variant;
+        PageID: Integer;
+    begin
+        if not PageEditable then exit;
+        RecRef.Open("Destination Table ID");
+        RecRelatedVariant := RecRef;
+        PageID := PageMgt.GetDefaultLookupPageIDByVar(RecRelatedVariant);
+        if PageID > 0 then
+            if Page.RunModal(PageID, RecRelatedVariant) = Action::LookupOK then
+                if DataTypeMgt.GetRecordRef(RecRelatedVariant, RecRef) then
+                    "Template Record" := RecRef.RecordId();
+    end;
 
 }

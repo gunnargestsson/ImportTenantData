@@ -1,7 +1,7 @@
 page 60310 "Import Project Table Mappings"
 {
 
-    PageType = Card;
+    PageType = ListPlus;
     SourceTable = "Import Project Table Mapping";
     Caption = 'Import Project Table Mappings';
     ShowFilter = false;
@@ -10,9 +10,8 @@ page 60310 "Import Project Table Mappings"
     {
         area(content)
         {
-            group(General)
+            repeater(General)
             {
-                Caption = 'General';
                 field("Destination Table ID"; "Destination Table ID")
                 {
                     ApplicationArea = All;
@@ -54,21 +53,8 @@ page 60310 "Import Project Table Mappings"
                     Editable = false;
                     ToolTip = 'Specify Record Filters that will be applied as default data';
                     trigger OnAssistEdit()
-                    var
-                        PageMgt: Codeunit "Page Management";
-                        DataTypeMgt: Codeunit "Data Type Management";
-                        RecRef: RecordRef;
-                        RecRelatedVariant: Variant;
-                        PageID: Integer;
                     begin
-                        if not CurrPage.Editable() then exit;
-                        RecRef.Open("Destination Table ID");
-                        RecRelatedVariant := RecRef;
-                        PageID := PageMgt.GetDefaultLookupPageIDByVar(RecRelatedVariant);
-                        if PageID > 0 then
-                            if Page.RunModal(PageID, RecRelatedVariant) = Action::LookupOK then
-                                if DataTypeMgt.GetRecordRef(RecRelatedVariant, RecRef) then
-                                    "Template Record" := RecRef.RecordId();
+                        SelectTemplateRecord(CurrPage.Editable());
                     end;
                 }
             }
@@ -80,14 +66,32 @@ page 60310 "Import Project Table Mappings"
             }
         }
     }
+    actions
+    {
+        area(Processing)
+        {
+            action(SelectTemplate)
+            {
+                ApplicationArea = All;
+                Image = Select;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                Caption = 'Select Template Record';
+                ToolTip = 'Specify Record Filters that will be applied as default data';
+
+                trigger OnAction()
+                begin
+                    SelectTemplateRecord(CurrPage.Editable());
+                end;
+            }
+        }
+    }
     trigger OnOpenPage()
     var
         ImportProjectDataInfo: Record "Import Project Data Info";
         AllObj: Record AllObj;
     begin
-        if GetFilter("Project Table ID") <> '' then
-            ProjectTableID := GetRangeMax("Project Table ID");
-
         if IsEmpty() then
             if ImportProjectDataInfo.Get("Project Table ID") then
                 if AllObj.Get(AllObj."Object Type"::Table, ImportProjectDataInfo."Table ID") then begin
@@ -96,13 +100,5 @@ page 60310 "Import Project Table Mappings"
                 end;
     end;
 
-    trigger OnNewRecord(BelowxRec: Boolean)
-    begin
-        if not IsNullGuid(ProjectTableID) then
-            "Project Table ID" := ProjectTableID;
-    end;
-
-    var
-        ProjectTableID: Guid;
 
 }
