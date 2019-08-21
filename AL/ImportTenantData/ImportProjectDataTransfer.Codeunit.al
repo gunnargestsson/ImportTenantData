@@ -6,6 +6,7 @@ codeunit 60321 "Import Project Data Transfer"
         ImportProjectData: Record "Import Project Data";
     begin
         ImportProjectData.Get("Record ID to Process");
+        ImportProjectData.SetRecFilter();
         ExecuteDataTransfer(ImportProjectData);
     end;
 
