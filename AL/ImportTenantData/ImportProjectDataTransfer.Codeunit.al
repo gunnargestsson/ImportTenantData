@@ -76,6 +76,7 @@ codeunit 60321 "Import Project Data Transfer"
         foreach SrcRow in SrcRowList do begin
             Counter += 1;
             if (Counter >= ImportProjectTableMapping."No. of Imported Records") or not ResumeTransfer then begin
+                DestRecRef.LockTable(true);
                 PopulatePrimaryKey(ImportProjectData.ID, SrcRow, DestRecRef);
                 UpdateRow := DestRecRef.Find();
                 if not UpdateRow then
@@ -129,6 +130,7 @@ codeunit 60321 "Import Project Data Transfer"
                     Commit();
                 end;
         end;
+        ImportProjectTableMapping.LockTable(true);
     end;
 
     local procedure InitializeReferences(ImportProjectData: Record "Import Project Data"; ImportProjectTableMapping: Record "Import Project Table Mapping"; var SrcRowList: XmlNodeList; var DestRecRef: RecordRef) RowCount: Integer
