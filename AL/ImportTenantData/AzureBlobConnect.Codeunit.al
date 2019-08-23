@@ -102,12 +102,12 @@ codeunit 60330 "Azure Blob JSON Connect"
         Tempblob.FromBase64String(JToken.AsValue().AsText());
     end;
 
-    local procedure SetConfiguration(AccountName: Text; AccountContainer: Text; AccountPrivateKey: Text; var JObject: JsonObject)
+    local procedure SetConfiguration(AccountName: Text; AccountContainer: Text; AccountAccessKey: Text; var JObject: JsonObject)
     begin
         Clear(JObject);
         JObject.Add('Name', AccountName);
         JObject.Add('Container', AccountContainer);
-        JObject.Add('PrivateKey', AccountPrivateKey);
+        JObject.Add('AccessKey', AccountAccessKey);
     end;
 
     local procedure GetImportSourceId() ImportSourceId: Guid

@@ -32,14 +32,14 @@ page 60330 "Azure Blob Connect Setup Card"
                     ToolTip = 'Specifies the Container Name for the selected Azure Storage Account';
                     ShowMandatory = true;
                 }
-                field("Access Key"; PrivateKey)
+                field("Access Key"; AccessKey)
                 {
                     ApplicationArea = All;
                     Caption = 'Access Key';
                     ExtendedDatatype = Masked;
                     trigger OnValidate()
                     begin
-                        SavePassword("Access Key ID", PrivateKey);
+                        SavePassword("Access Key ID", AccessKey);
                     end;
                 }
             }
@@ -64,12 +64,12 @@ page 60330 "Azure Blob Connect Setup Card"
     trigger OnAfterGetRecord()
     begin
         if HasPassword("Access Key ID") then
-            PrivateKey := GetPassword("Access Key ID")
+            AccessKey := GetPassword("Access Key ID")
         else
-            PrivateKey := '';
+            AccessKey := '';
     end;
 
     var
         ConfigurationMissingErr: Label 'Configuration Missing';
-        PrivateKey: Text;
+        AccessKey: Text;
 }

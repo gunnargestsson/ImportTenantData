@@ -68,7 +68,7 @@ table 60330 "Azure Blob Connect Setup"
         TestField("Account Name");
         TestField("Container Name");
         if not HasPassword("Access Key ID") then
-            error(PrivateKeyMissingErr);
+            error(AccessKeyMissingErr);
     end;
 
     procedure SavePassword(var PasswordKey: Guid; PasswordText: Text)
@@ -113,6 +113,6 @@ table 60330 "Azure Blob Connect Setup"
     end;
 
     var
-        PrivateKeyMissingErr: Label 'Access Key is missing';
+        AccessKeyMissingErr: Label 'Access Key is missing';
 
 }
