@@ -28,14 +28,14 @@ codeunit 60320 "Import Source Mgt."
     var
         AllObj: Record AllObj;
     begin
-        exit(GetObjectID(PageName, AllObj."Object Type"::Codeunit));
+        exit(GetObjectID(PageName, AllObj."Object Type"::Page);
     end;
 
     procedure GetPageName(PageID: Integer) PageName: Text[30]
     var
         AllObj: Record AllObj;
     begin
-        exit(GetObjectName(PageID, AllObj."Object Type"::Codeunit));
+        exit(GetObjectName(PageID, AllObj."Object Type"::Page));
     end;
 
     local procedure GetObjectID(ObjectName: Text[30]; "ObjectType": Option) ObjectID: Integer
