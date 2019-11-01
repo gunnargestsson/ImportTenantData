@@ -28,7 +28,7 @@ codeunit 60320 "Import Source Mgt."
     var
         AllObj: Record AllObj;
     begin
-        exit(GetObjectID(PageName, AllObj."Object Type"::Page);
+        exit(GetObjectID(PageName, AllObj."Object Type"::Page));
     end;
 
     procedure GetPageName(PageID: Integer) PageName: Text[30]
