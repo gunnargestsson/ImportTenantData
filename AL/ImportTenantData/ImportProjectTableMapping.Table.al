@@ -16,7 +16,7 @@ table 60310 "Import Project Table Mapping"
         {
             DataClassification = SystemMetadata;
             Caption = 'Destination Table ID';
-            TableRelation = AllObjWithCaption."Object ID" where ("Object Type" = const ("Table"));
+            TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const("Table"));
             NotBlank = true;
 
             trigger OnValidate()
@@ -30,14 +30,14 @@ table 60310 "Import Project Table Mapping"
         {
             Caption = 'Destination Table Name';
             FieldClass = FlowField;
-            CalcFormula = lookup (AllObjWithCaption."Object Name" where ("Object Type" = const (table), "Object ID" = field ("Destination Table ID")));
+            CalcFormula = lookup (AllObjWithCaption."Object Name" where("Object Type" = const(table), "Object ID" = field("Destination Table ID")));
             Editable = false;
         }
         field(5; "Destination Table Caption"; Text[50])
         {
             Caption = 'Destination Table Caption';
             FieldClass = FlowField;
-            CalcFormula = lookup (AllObjWithCaption."Object Caption" where ("Object Type" = const (table), "Object ID" = field ("Destination Table ID")));
+            CalcFormula = lookup (AllObjWithCaption."Object Caption" where("Object Type" = const(table), "Object ID" = field("Destination Table ID")));
             Editable = false;
         }
         field(6; "Destination Table Record Count"; Integer)
@@ -134,11 +134,14 @@ table 60310 "Import Project Table Mapping"
                 DataFieldMapping."Project Table ID" := "Project Table ID";
                 DataFieldMapping."Destination Table ID" := "Destination Table ID";
                 DataFieldMapping."Project Field ID" := ImportDataField."Field ID";
-                if DataFieldMapping.GetIsPrimaryKeyField(ImportDataField."Field ID") then
+                if DataFieldMapping.GetIsPrimaryKeyField(ImportDataField."Field ID") or
+                    DataFieldMapping.IsMatchingLocalField(ImportDataField."Field ID")
+                 then
                     DataFieldMapping."Destination Field ID" := ImportDataField."Field ID";
                 DataFieldMapping.Insert();
             until ImportDataField.Next() = 0;
     end;
+
 
     procedure SelectTemplateRecord(PageEditable: Boolean)
     var

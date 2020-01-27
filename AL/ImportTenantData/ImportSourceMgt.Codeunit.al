@@ -10,35 +10,35 @@ codeunit 60320 "Import Source Mgt."
         exit('ImportSourceID');
     end;
 
-    procedure GetCodeunitID(CodeunitName: Text[30]) CodeunitID: Integer
+    procedure GetCodeunitID(CodeunitName: Text[50]) CodeunitID: Integer
     var
         AllObj: Record AllObj;
     begin
         exit(GetObjectID(CodeunitName, AllObj."Object Type"::Codeunit));
     end;
 
-    procedure GetCodeunitName(CodeunitID: Integer) CodeunitName: Text[30]
+    procedure GetCodeunitName(CodeunitID: Integer) CodeunitName: Text[50]
     var
         AllObj: Record AllObj;
     begin
         exit(GetObjectName(CodeunitID, AllObj."Object Type"::Codeunit));
     end;
 
-    procedure GetPageID(PageName: Text[30]) PageID: Integer
+    procedure GetPageID(PageName: Text[50]) PageID: Integer
     var
         AllObj: Record AllObj;
     begin
         exit(GetObjectID(PageName, AllObj."Object Type"::Page));
     end;
 
-    procedure GetPageName(PageID: Integer) PageName: Text[30]
+    procedure GetPageName(PageID: Integer) PageName: Text[50]
     var
         AllObj: Record AllObj;
     begin
         exit(GetObjectName(PageID, AllObj."Object Type"::Page));
     end;
 
-    local procedure GetObjectID(ObjectName: Text[30]; "ObjectType": Option) ObjectID: Integer
+    local procedure GetObjectID(ObjectName: Text[50]; "ObjectType": Option) ObjectID: Integer
     var
         AllObj: Record AllObj;
     begin
@@ -48,7 +48,7 @@ codeunit 60320 "Import Source Mgt."
             exit(AllObj."Object ID");
     end;
 
-    local procedure GetObjectName(ObjectID: Integer; "ObjectType": Option) ObjectName: Text[30]
+    local procedure GetObjectName(ObjectID: Integer; "ObjectType": Option) ObjectName: Text[50]
     var
         AllObj: Record AllObj;
     begin

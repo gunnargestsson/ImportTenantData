@@ -3,7 +3,7 @@ page 60303 "Import Project Data Part"
 
     PageType = ListPart;
     SourceTable = "Import Project Data";
-    SourceTableView = sorting ("File Name");
+    SourceTableView = sorting("File Name");
     Caption = 'Import Project Data Part';
     InsertAllowed = false;
 
@@ -87,7 +87,7 @@ page 60303 "Import Project Data Part"
                 Caption = 'Fields';
                 ToolTip = 'View list of fields for this Xml file';
                 RunObject = page "Import Project Data Field List";
-                RunPageLink = ID = field (ID);
+                RunPageLink = ID = field(ID);
 
                 trigger OnAction()
                 begin
@@ -101,7 +101,7 @@ page 60303 "Import Project Data Part"
                 Caption = 'Destination Mapping';
                 ToolTip = 'Configure the data mapping for the import data';
                 RunObject = page "Import Project Table Mappings";
-                RunPageLink = "Project Table ID" = field (ID);
+                RunPageLink = "Project Table ID" = field(ID);
                 RunPageMode = Edit;
 
                 trigger OnAction()
@@ -166,7 +166,7 @@ page 60303 "Import Project Data Part"
                     ImportProjScheduler: Codeunit "Import Project Data Scheduler";
                 begin
                     CurrPage.SetSelectionFilter(ImportProjectData);
-                    ImportProjScheduler.ScheduleDataTransfer(ImportProjectData);
+                    ImportProjScheduler.ScheduleDataTransfer(ImportProjectData, 10);
                 end;
             }
             action("ShowListPage")

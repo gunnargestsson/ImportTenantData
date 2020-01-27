@@ -39,7 +39,7 @@ page 60311 "Import Project Field Map. Part"
                     QuickEntry = false;
                 }
 
-                field(ShowWarning; GetWarning())
+                field(ShowWarning; GetWarning("Destination Field ID"))
                 {
                     ApplicationArea = All;
                     Editable = false;

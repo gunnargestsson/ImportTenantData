@@ -27,7 +27,7 @@ codeunit 60321 "Import Project Data Transfer"
         Total: Integer;
         Counter: Integer;
     begin
-        StartTime := RoundDateTime(CurrentDateTime);
+        StartTime := RoundDateTime(CurrentDateTime());
         Window.Open(DialogMsg + '\\@2@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@' + '\\@3@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
         with ImportProjectData do begin
             Total := Count();
@@ -42,7 +42,7 @@ codeunit 60321 "Import Project Data Transfer"
             until Next() = 0;
         end;
         Window.Close();
-        Message(DataImportFinished, (RoundDateTime(CurrentDateTime) - StartTime));
+        Message(DataImportFinishedMsg, (RoundDateTime(CurrentDateTime()) - StartTime));
     end;
 
     local procedure ExecuteDataTransferForTable(ImportProjectData: Record "Import Project Data"; ResumeTransfer: Boolean)
@@ -64,19 +64,22 @@ codeunit 60321 "Import Project Data Transfer"
 
     local procedure CopyData(ImportProjectData: Record "Import Project Data"; ImportProjectTableMapping: Record "Import Project Table Mapping"; HasTemplateRecRef: Boolean; TemplateRecRef: RecordRef; ResumeTransfer: Boolean)
     var
+        DestRecRef: RecordRef;
+        InitDestRecRef: RecordRef;
         SrcRowList: XmlNodeList;
         SrcRow: XmlNode;
-        DestRecRef: RecordRef;
         Total: Integer;
         Counter: Integer;
         UpdateRow: Boolean;
     begin
-        Total := InitializeReferences(ImportProjectData, ImportProjectTableMapping, SrcRowList, DestRecRef);
+        Total := InitializeReferences(ImportProjectData, ImportProjectTableMapping, SrcRowList, InitDestRecRef);
         if Total = 0 then exit;
+        OnBeforeTableProcess(ImportProjectTableMapping, SrcRowList, DestRecRef);
 
         foreach SrcRow in SrcRowList do begin
             Counter += 1;
             if (Counter >= ImportProjectTableMapping."No. of Imported Records") or not ResumeTransfer then begin
+                DestRecRef := InitDestRecRef.Duplicate();
                 DestRecRef.LockTable(true);
                 PopulatePrimaryKey(ImportProjectData.ID, SrcRow, DestRecRef);
                 UpdateRow := DestRecRef.Find();
@@ -91,7 +94,7 @@ codeunit 60321 "Import Project Data Transfer"
                 end else
                     if ImportProjectData."Missing Record Handling" = ImportProjectData."Missing Record Handling"::Create then begin
                         OnBeforeInsert(ImportProjectTableMapping, SrcRow, DestRecRef);
-                        DestRecRef.Insert();
+                        if DestRecRef.Insert() then;
                     end;
 
                 UpdateImportedRecords(ImportProjectData, ImportProjectTableMapping, Counter, Total);
@@ -100,6 +103,7 @@ codeunit 60321 "Import Project Data Transfer"
             if Counter MOD 100 = 0 then
                 Window.Update(3, Round(Counter / Total * 10000, 1));
         end;
+        OnAfterTableProcess(ImportProjectTableMapping, SrcRowList, DestRecRef);
         ImportProjectTableMapping.Modify();
     end;
 
@@ -136,8 +140,8 @@ codeunit 60321 "Import Project Data Transfer"
 
     local procedure InitializeReferences(ImportProjectData: Record "Import Project Data"; ImportProjectTableMapping: Record "Import Project Table Mapping"; var SrcRowList: XmlNodeList; var DestRecRef: RecordRef) RowCount: Integer
     var
-        Xml: XmlDocument;
         NodeMgt: Codeunit "Import Project Node Mgt.";
+        Xml: XmlDocument;
     begin
         ImportProjectData.GetXml(Xml);
         if not Xml.SelectNodes(NodeMgt.GetNodeXPath('Row'), SrcRowList) then exit(0);
@@ -149,8 +153,8 @@ codeunit 60321 "Import Project Data Transfer"
     var
         ImportProjectFieldMapping: Record "Import Project Field Mapping";
         ImportProjectField: Record "Import Project Data Field";
-        SrcFldValueAsText: Text;
         DestFldRef: FieldRef;
+        SrcFldValueAsText: Text;
     begin
         FilterFields(ImportProjectTableMapping, ImportProjectFieldMapping);
         with ImportProjectFieldMapping do
@@ -167,20 +171,19 @@ codeunit 60321 "Import Project Data Transfer"
 
     local procedure ApplyTemplateRecord(TemplateRecRef: RecordRef; var DestRecRef: RecordRef)
     var
-        TempBlob: Record TempBlob;
         CleanRecRef: RecordRef;
         CleanFldRef: FieldRef;
         TemplateFldRef: FieldRef;
         DstFldRef: FieldRef;
         FieldIndex: Integer;
     begin
-        CleanRecRef.Open(DestRecRef.Number);
+        CleanRecRef.Open(DestRecRef.Number());
         CleanRecRef.Init();
-        for FieldIndex := 1 to CleanRecRef.FieldCount do begin
+        for FieldIndex := 1 to CleanRecRef.FieldCount() do begin
             CleanFldRef := CleanRecRef.FieldIndex(FieldIndex);
-            if (CleanFldRef.Class = FieldClass::Normal) and
-                CleanFldRef.Active and not
-                (CleanFldRef.Type IN [FieldType::Blob, FieldType::Media, FieldType::MediaSet])
+            if (CleanFldRef.Class() = FieldClass::Normal) and
+                CleanFldRef.Active() and not
+                (CleanFldRef.Type() IN [FieldType::Blob, FieldType::Media, FieldType::MediaSet])
             then begin
                 TemplateFldRef := TemplateRecRef.FieldIndex(FieldIndex);
                 DstFldRef := DestRecRef.FieldIndex(FieldIndex);
@@ -200,6 +203,7 @@ codeunit 60321 "Import Project Data Transfer"
     local procedure PopulatePrimaryKey(ProjectTableId: Guid; SrcRow: XmlNode; var DestRecRef: RecordRef)
     var
         ImportProjectField: Record "Import Project Data Field";
+        ImportProjectFieldMapping: Record "Import Project Field Mapping";
         DestFldRef: FieldRef;
         PrimaryKeyRef: KeyRef;
         FieldIndex: Integer;
@@ -207,8 +211,12 @@ codeunit 60321 "Import Project Data Transfer"
         PrimaryKeyRef := DestRecRef.KeyIndex(1);
         for FieldIndex := 1 to PrimaryKeyRef.FieldCount() do begin
             DestFldRef := PrimaryKeyRef.FieldIndex(FieldIndex);
-            if ImportProjectField.Get(ProjectTableId, DestFldRef.Number()) then
-                CopyValue(ImportProjectField, DestRecRef.Number(), ImportProjectField.GetFieldValueAsText(SrcRow), DestFldRef);
+            ImportProjectFieldMapping.SetRange("Project Table ID", ProjectTableId);
+            ImportProjectFieldMapping.SetRange("Destination Table ID", DestRecRef.Number());
+            ImportProjectFieldMapping.SetRange("Destination Field ID", DestFldRef.Number());
+            if ImportProjectFieldMapping.FindFirst() then
+                if ImportProjectField.Get(ProjectTableId, ImportProjectFieldMapping."Project Field ID") then
+                    CopyValue(ImportProjectField, DestRecRef.Number(), ImportProjectField.GetFieldValueAsText(SrcRow), DestFldRef);
         end;
     end;
 
@@ -224,52 +232,58 @@ codeunit 60321 "Import Project Data Transfer"
         ImportProjectDataBuffer.Insert(true);
         with ImportProjectFieldMapping do begin
             Get(ImportProjectField.ID, ImportProjectField."Field ID", DestinationTableId);
-            if GetWarning() <> '' then exit;
+            if GetWarning("Destination Field ID") <> '' then exit;
             if "Transformation Rule" <> '' then begin
                 ApplyTransformationRule("Transformation Rule", SrcFldValueAsText);
-                EvaluateFieldValue(ImportProjectField."Data Type", SrcFldValueAsText, DestFldRef);
+                EvaluateFieldValue(ImportProjectField."Data Type", ImportProjectField.Compressed, SrcFldValueAsText, DestFldRef);
             end else
-                if format(DestFldRef.Type) = ImportProjectField."Data Type" then
-                    EvaluateFieldValue(ImportProjectField."Data Type", SrcFldValueAsText, DestFldRef)
+                if format(DestFldRef.Type()) = ImportProjectField."Data Type" then
+                    EvaluateFieldValue(ImportProjectField."Data Type", ImportProjectField.Compressed, SrcFldValueAsText, DestFldRef)
                 else
                     case true of
-                        (format(DestFldRef.Type) in ['Text', 'Code']) and (ImportProjectField."Data Type" in ['Text', 'Code', 'Guid']):
-                            EvaluateFieldValue(ImportProjectField."Data Type", SrcFldValueAsText, DestFldRef);
-                        (format(DestFldRef.Type) in ['Integer', 'Option', 'Enum']) and (ImportProjectField."Data Type" in ['Integer', 'Option']):
-                            EvaluateFieldValue(ImportProjectField."Data Type", SrcFldValueAsText, DestFldRef);
-                        (format(DestFldRef.Type) in ['Date']) and (ImportProjectField."Data Type" in ['DateTime']):
+                        (format(DestFldRef.Type()) in ['Text', 'Code']) and (ImportProjectField."Data Type" in ['Text', 'Code', 'Guid']):
+                            EvaluateFieldValue(ImportProjectField."Data Type", ImportProjectField.Compressed, SrcFldValueAsText, DestFldRef);
+                        (format(DestFldRef.Type()) in ['Integer', 'Option', 'Enum']) and (ImportProjectField."Data Type" in ['Integer', 'Option']):
+                            EvaluateFieldValue(ImportProjectField."Data Type", ImportProjectField.Compressed, SrcFldValueAsText, DestFldRef);
+                        (format(DestFldRef.Type()) in ['Date']) and (ImportProjectField."Data Type" in ['DateTime']):
                             begin
                                 ImportProjectDataBuffer.GetFieldAsFieldRef(ImportProjectDataBuffer.FieldNo("Date Time Type"), DataBufferFldRef);
-                                EvaluateFieldValue(ImportProjectField."Data Type", SrcFldValueAsText, DataBufferFldRef);
+                                EvaluateFieldValue(ImportProjectField."Data Type", ImportProjectField.Compressed, SrcFldValueAsText, DataBufferFldRef);
                                 ImportProjectDataBuffer."Date Time Type" := DataBufferFldRef.Value();
                                 DestFldRef.Value(DT2Date(ImportProjectDataBuffer."Date Time Type"));
                             end;
-                        (format(DestFldRef.Type) in ['Time']) and (ImportProjectField."Data Type" in ['DateTime']):
+                        (format(DestFldRef.Type()) in ['Time']) and (ImportProjectField."Data Type" in ['DateTime']):
                             begin
                                 ImportProjectDataBuffer.GetFieldAsFieldRef(ImportProjectDataBuffer.FieldNo("Date Time Type"), DataBufferFldRef);
-                                EvaluateFieldValue(ImportProjectField."Data Type", SrcFldValueAsText, DataBufferFldRef);
+                                EvaluateFieldValue(ImportProjectField."Data Type", ImportProjectField.Compressed, SrcFldValueAsText, DataBufferFldRef);
                                 ImportProjectDataBuffer."Date Time Type" := DataBufferFldRef.Value();
                                 DestFldRef.Value(DT2Time(ImportProjectDataBuffer."Date Time Type"));
                             end;
-                        (format(DestFldRef.Type) in ['DateTime']) and (ImportProjectField."Data Type" in ['Date']):
+                        (format(DestFldRef.Type()) in ['DateTime']) and (ImportProjectField."Data Type" in ['Date']):
                             begin
                                 ImportProjectDataBuffer.GetFieldAsFieldRef(ImportProjectDataBuffer.FieldNo("Date Type"), DataBufferFldRef);
-                                EvaluateFieldValue(ImportProjectField."Data Type", SrcFldValueAsText, DataBufferFldRef);
+                                EvaluateFieldValue(ImportProjectField."Data Type", ImportProjectField.Compressed, SrcFldValueAsText, DataBufferFldRef);
                                 ImportProjectDataBuffer."Date Type" := DataBufferFldRef.Value();
                                 ImportProjectDataBuffer."Time Type" := DT2Time(DestFldRef.Value());
                                 DestFldRef.Value(CreateDateTime(ImportProjectDataBuffer."Date Type", ImportProjectDataBuffer."Time Type"));
                             end;
-                        (format(DestFldRef.Type) in ['DateTime']) and (ImportProjectField."Data Type" in ['Time']):
+                        (format(DestFldRef.Type()) in ['DateTime']) and (ImportProjectField."Data Type" in ['Time']):
                             begin
                                 ImportProjectDataBuffer.GetFieldAsFieldRef(ImportProjectDataBuffer.FieldNo("Time Type"), DataBufferFldRef);
-                                EvaluateFieldValue(ImportProjectField."Data Type", SrcFldValueAsText, DataBufferFldRef);
+                                EvaluateFieldValue(ImportProjectField."Data Type", ImportProjectField.Compressed, SrcFldValueAsText, DataBufferFldRef);
                                 ImportProjectDataBuffer."Time Type" := DataBufferFldRef.Value();
                                 ImportProjectDataBuffer."Date Type" := DT2Date(DestFldRef.Value());
                                 DestFldRef.Value(CreateDateTime(ImportProjectDataBuffer."Date Type", ImportProjectDataBuffer."Time Type"));
                             end;
+                        (format(DestFldRef.Type()) in ['Media']) and (ImportProjectField."Data Type" in ['BLOB']):
+                            begin
+                                ImportProjectDataBuffer.GetFieldAsFieldRef(ImportProjectDataBuffer.FieldNo("Blob Type"), DataBufferFldRef);
+                                EvaluateFieldValue(ImportProjectField."Data Type", ImportProjectField.Compressed, SrcFldValueAsText, DataBufferFldRef);
+                                DestFldRef.Value(ImportProjectDataBuffer.CopyBlobValueToImage(DataBufferFldRef));
+                            end;
 
                         else
-                            error(FieldTypeTransformationNotSupportedErr, DestFldRef.Type, ImportProjectField."Data Type");
+                            error(FieldTypeTransformationNotSupportedErr, DestFldRef.Type(), ImportProjectField."Data Type");
                     end;
         end;
         OnAfterCopyValue(ImportProjectFieldMapping, SrcFldValueAsText, DestFldRef);
@@ -283,7 +297,7 @@ codeunit 60321 "Import Project Data Transfer"
         FieldValue := TransformationRule.TransformText(FieldValue);
     end;
 
-    local procedure EvaluateFieldValue(ImportFieldType: Text; FieldValue: Text; var DestFldRef: FieldRef)
+    local procedure EvaluateFieldValue(ImportFieldType: Text; BlobCompressed: Boolean; FieldValue: Text; var DestFldRef: FieldRef)
     var
         TempBlob: Record TempBlob;
         DateformulaType: DateFormula;
@@ -329,16 +343,14 @@ codeunit 60321 "Import Project Data Transfer"
                     DestFldRef.Value := DateTimeType;
                 end;
             FieldType::DATE:
-                begin
-                    if FieldValue <> '' then begin
-                        Evaluate(DateType, FieldValue, 9);
-                        if ClosingDate then
-                            DestFldRef.Value := ClosingDate(DateType)
-                        else
-                            DestFldRef.Value := NormalDate(DateType);
-                    end else
-                        DestFldRef.Value := 0D;
-                end;
+                if FieldValue <> '' then begin
+                    Evaluate(DateType, FieldValue, 9);
+                    if ClosingDate then
+                        DestFldRef.Value := ClosingDate(DateType)
+                    else
+                        DestFldRef.Value := NormalDate(DateType);
+                end else
+                    DestFldRef.Value := 0D;
             FieldType::TIME:
                 begin
                     if FieldValue <> '' then
@@ -350,7 +362,7 @@ codeunit 60321 "Import Project Data Transfer"
             FieldType::DATEFORMULA:
                 begin
                     if FieldValue <> '' then
-                        Evaluate(DateformulaType, FieldValue, 9)
+                        Evaluate(DateformulaType, FieldValue.Replace('><', ''), 9)
                     else
                         Clear(DateformulaType);
                     DestFldRef.Value := DateformulaType;
@@ -399,7 +411,9 @@ codeunit 60321 "Import Project Data Transfer"
                 end;
             FieldType::BLOB:
                 begin
-                    TempBlob.WriteAsText(FieldValue, TextEncoding::Windows);
+                    if BlobCompressed then
+                        DeflateB64(FieldValue);
+                    TempBlob.FromBase64String(FieldValue);
                     DestFldRef.Value(TempBlob.Blob);
                 end;
             FieldType::GUID:
@@ -422,6 +436,20 @@ codeunit 60321 "Import Project Data Transfer"
                 Error(FieldTypeNotSupportedErr, UpperCase(Format(DestFldRef.Type())));
 
         end;
+    end;
+
+    local procedure DeflateB64(var b64string: Text)
+    var
+    //JsonMgt: Codeunit "ADV Json Interface Mgt.";
+    begin
+        if b64string = '' then exit;
+
+        // JsonMgt.Initialize();
+        // JsonMgt.AddVariable('Method', 'B64.Deflate');
+        // JsonMgt.AddVariable('b64string', b64string);
+        // if not JsonMgt.ExecuteAzureFunction() then
+        //     Error(UnableToDeflateB64StringErr);
+        // JsonMgt.GetVariableTextValue(b64string, 'b64string');
     end;
 
     [IntegrationEvent(false, false)]
@@ -448,12 +476,24 @@ codeunit 60321 "Import Project Data Transfer"
 
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeTableProcess(ImportProjectTableMapping: Record "Import Project Table Mapping"; SrcRowList: XmlNodeList; var DestRecRef: RecordRef)
+    begin
+
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterTableProcess(ImportProjectTableMapping: Record "Import Project Table Mapping"; SrcRowList: XmlNodeList; var DestRecRef: RecordRef)
+    begin
+
+    end;
 
     var
         DialogMsg: Label 'Executing Data Import for table: #1##############################';
         FieldTypeNotSupportedErr: Label 'Field Type %1 not supported!';
         FieldTypeTransformationNotSupportedErr: Label 'Field value transformation from type %1 to %2 not supported!';
-        DataImportFinished: Label 'Data Import Completed. Duration %1';
+        DataImportFinishedMsg: Label 'Data Import Completed. Duration %1';
+        UnableToDeflateB64StringErr: Label 'Unable to deflate base 64 string';
         Window: Dialog;
 
 }

@@ -73,24 +73,25 @@ codeunit 60306 "Import Project Xml MetaData"
             DataField."Auto Increment" := NodeMgt.FindAttributeDecimalValue(FieldNode, 'AutoIncrement') = 1;
             DataField."Blank Numbers" := NodeMgt.FindAttributeTextValue(FieldNode, 'BlankNumbers');
             DataField."Blank Zero" := NodeMgt.FindAttributeDecimalValue(FieldNode, 'BlankZero') = 1;
+            DataField."Sub Type" := NodeMgt.FindAttributeTextValue(FieldNode, 'SubType');
+            if NodeMgt.FindAttributeTextValue(FieldNode, 'Compressed') = '0' then
+                DataField.Compressed := false;
             DataField.Insert();
         end;
     end;
 
-    local procedure GetCaptionValue(CaptionAttributeValue: Text) LocalCaption: Text[250];
+    local procedure GetCaptionValue(CaptionAttributeValue: Text) LocalCaption: Text;
     var
         Language: Record Language;
         Captions: List of [Text];
     begin
         if CaptionAttributeValue = '' then exit('');
-        Language.SETRANGE("Windows Language ID", GlobalLanguage);
+        Language.SETRANGE("Windows Language ID", GlobalLanguage());
         if not Language.FindFirst() then exit('');
         Captions := CaptionAttributeValue.Split(';');
-        foreach LocalCaption in Captions do begin
-            if StrPos(LocalCaption, Language."Code") = 1 then begin
+        foreach LocalCaption in Captions do
+            if StrPos(LocalCaption, Language."Code") = 1 then
                 exit(DelChr(DelChr(CopyStr(LocalCaption, 5), '>', '"'), '<', '"'));
-            end;
-        end;
         exit('');
     end;
 

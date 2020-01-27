@@ -29,6 +29,11 @@ table 60320 "Import Data Source"
             DataClassification = SystemMetadata;
             Caption = 'Setup Page Name';
         }
+        field(5; "Content Codeunit Name"; Text[50])
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Content Update Codeunit Name';
+        }
     }
 
     keys

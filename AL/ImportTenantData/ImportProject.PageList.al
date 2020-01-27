@@ -36,5 +36,22 @@ page 60300 "Import Project List"
             }
         }
     }
-
+    actions
+    {
+        area(Processing)
+        {
+            action(ClearImportedData)
+            {
+                Caption = 'Clear Imported Data';
+                ToolTip = 'Clear Imported Data from all projects';
+                Image = DeleteXML;
+                trigger OnAction()
+                var
+                    ProjectData: Record "Import Project Data";
+                begin
+                    ProjectData.ClearContent();
+                end;
+            }
+        }
+    }
 }

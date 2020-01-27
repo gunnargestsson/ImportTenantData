@@ -45,7 +45,7 @@ table 60305 "Import Project Data Field"
             DataClassification = SystemMetadata;
             Caption = 'Enabled';
         }
-        field(12; "Field Caption"; Text[50])
+        field(12; "Field Caption"; Text[250])
         {
             DataClassification = SystemMetadata;
             Caption = 'Field Caption';
@@ -136,16 +136,28 @@ table 60305 "Import Project Data Field"
             Caption = 'Access By Permission Mask';
             BlankZero = true;
         }
-        field(30; "Option String"; Text[250])
+        field(30; "Option String"; Text[1024])
         {
             DataClassification = SystemMetadata;
             Caption = 'Option String';
         }
-        field(31; "Option Caption"; Text[250])
+        field(31; "Option Caption"; Text[1024])
         {
             DataClassification = SystemMetadata;
             Caption = 'Option Caption';
         }
+        field(32; "Sub Type"; Text[30])
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Sub Type';
+        }
+        field(33; Compressed; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Compressed';
+            InitValue = true;
+        }
+
     }
 
     keys

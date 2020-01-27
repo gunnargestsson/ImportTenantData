@@ -25,7 +25,7 @@ table 60311 "Import Project Field Mapping"
         {
             DataClassification = SystemMetadata;
             Caption = 'Destination Table ID';
-            TableRelation = AllObjWithCaption."Object ID" where ("Object Type" = const ("Table"));
+            TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const("Table"));
             NotBlank = true;
             trigger OnValidate()
             begin
@@ -36,7 +36,7 @@ table 60311 "Import Project Field Mapping"
         {
             DataClassification = SystemMetadata;
             Caption = 'Destination Field ID';
-            TableRelation = Field."No." where (TableNo = field ("Destination Table ID"));
+            TableRelation = Field."No." where(TableNo = field("Destination Table ID"));
             BlankZero = true;
 
             trigger OnValidate()
@@ -48,21 +48,21 @@ table 60311 "Import Project Field Mapping"
         {
             Caption = 'Destination Field Name';
             FieldClass = FlowField;
-            CalcFormula = lookup (Field.FieldName where (TableNo = field ("Destination Table ID"), "No." = field ("Destination Field ID")));
+            CalcFormula = lookup (Field.FieldName where(TableNo = field("Destination Table ID"), "No." = field("Destination Field ID")));
             Editable = false;
         }
         field(10; "Project Field Name"; Text[30])
         {
             Caption = 'Project Field Name';
             FieldClass = FlowField;
-            CalcFormula = lookup ("Import Project Data Field"."Field Name" where ("Field ID" = field ("Project Field ID"), ID = field ("Project Table ID")));
+            CalcFormula = lookup ("Import Project Data Field"."Field Name" where("Field ID" = field("Project Field ID"), ID = field("Project Table ID")));
             Editable = false;
         }
         field(11; "Project Field Caption"; Text[50])
         {
             Caption = 'Project Field Caption';
             FieldClass = FlowField;
-            CalcFormula = lookup ("Import Project Data Field"."Field Caption" where ("Field ID" = field ("Project Field ID"), ID = field ("Project Table ID")));
+            CalcFormula = lookup ("Import Project Data Field"."Field Caption" where("Field ID" = field("Project Field ID"), ID = field("Project Table ID")));
             Editable = false;
         }
         field(20; "Transformation Rule"; Code[20])
@@ -110,26 +110,27 @@ table 60311 "Import Project Field Mapping"
             DeleteAll();
     end;
 
-    procedure GetWarning(): Text
+    procedure GetWarning(DestinationFieldID: Integer): Text
     var
         ImportProjectDataInfo: Record "Import Project Data Info";
         ImportProjectDataField: Record "Import Project Data Field";
         DestinationFld: Record Field;
     begin
         if not ImportProjectDataInfo.Get("Project Table ID") then exit(SourceTableMissingErr);
-        if "Destination Field ID" = 0 then exit(FieldIgnoredMsg);
+        if DestinationFieldID = 0 then exit(FieldIgnoredMsg);
         ImportProjectDataField.Get("Project Table ID", "Project Field ID");
-        if GetIsPrimaryKeyField("Destination Field ID") then exit;
-        if not DestinationFld.Get("Destination Table ID", "Destination Field ID") then
+        if GetIsPrimaryKeyField(DestinationFieldID) then exit;
+        if not DestinationFld.Get("Destination Table ID", DestinationFieldID) then
             exit(FieldNotFoundMsg);
         if DestinationFld.Enabled <> ImportProjectDataField.Enabled then exit(StrSubstNo(FieldDefMismatchMsg, DestinationFld.FieldCaption(Enabled)));
         if DestinationFld.Class <> DestinationFld.Class::Normal then exit(StrSubstNo(FieldDefMismatchMsg, DestinationFld.FieldCaption(Class)));
         if "Transformation Rule" <> '' then exit;
         if DestinationFld.Len < ImportProjectDataField."Data Length" then exit(StrSubstNo(FieldMismatchMsg, DestinationFld.FieldCaption(Len)));
         if format(DestinationFld.Type) <> ImportProjectDataField."Data Type" then begin
-            if (format(DestinationFld.Type) in ['Text', 'Code']) and (ImportProjectDataField."Data Type" in ['Text', 'Code', 'Guid']) then exit;
+            if (format(DestinationFld.Type) in ['Text', 'Code']) and (ImportProjectDataField."Data Type" in ['Text', 'Code', 'Guid', 'Media', 'MediaSet']) then exit;
             if (format(DestinationFld.Type) in ['Date', 'Time', 'DateTime']) and (ImportProjectDataField."Data Type" in ['Date', 'Time', 'DateTime']) then exit;
             if (format(DestinationFld.Type) in ['Integer', 'Option', 'Enum']) and (ImportProjectDataField."Data Type" in ['Integer', 'Option']) then exit;
+            if (format(DestinationFld.Type) in ['Media']) and (ImportProjectDataField."Data Type" in ['BLOB']) then exit;
             exit(StrSubstNo(FieldMismatchMsg, DestinationFld.FieldCaption(Type)));
         end;
     end;
@@ -149,7 +150,17 @@ table 60311 "Import Project Field Mapping"
         end;
     end;
 
-
+    procedure IsMatchingLocalField(DestinationFieldID: Integer): Boolean
+    var
+        DestinationFld: Record Field;
+    begin
+        DestinationFld.SetRange(TableNo, "Destination Table ID");
+        DestinationFld.SetRange("No.", DestinationFieldID);
+        DestinationFld.SetRange(Enabled, true);
+        DestinationFld.SetRange(ObsoleteState, DestinationFld.ObsoleteState::No);
+        if DestinationFld.IsEmpty() then exit(false);
+        exit(GetWarning(DestinationFieldID) = '');
+    end;
 
     var
         FieldMismatchMsg: Label 'Field Type Mismatch: %1';

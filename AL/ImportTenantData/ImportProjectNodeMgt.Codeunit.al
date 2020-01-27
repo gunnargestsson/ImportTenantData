@@ -6,24 +6,24 @@ codeunit 60305 "Import Project Node Mgt."
         FldRef: FieldRef;
     begin
         FldRef := RecRef.Field(FldNo);
-        case UpperCase(Format(FldRef.Type)) of
-            'BLOB':
+        case FldRef.Type() of
+            FieldType::Blob:
                 begin
                     TempBlob.WriteAsText(FindNodeTextValue(XmlSearchNode, NodeName), TextEncoding::Windows);
                     FldRef.Value(TempBlob.Blob);
                 end;
-            'TEXT', 'CODE':
-                FldRef.Value(CopyStr(FindNodeTextValue(XmlSearchNode, NodeName), 1, FldRef.Length));
-            'DECIMAL', 'INTEGER':
+            FieldType::Text, FieldType::Code:
+                FldRef.Value(CopyStr(FindNodeTextValue(XmlSearchNode, NodeName), 1, FldRef.Length()));
+            FieldType::Decimal, FieldType::Integer:
                 FldRef.Value(FindNodeDecimalValue(XmlSearchNode, NodeName));
-            'DATETIME':
+            FieldType::DateTime:
                 FldRef.Value(FindNodeDateTimeValue(XmlSearchNode, NodeName));
-            'DATE':
+            FieldType::Date:
                 FldRef.Value(FindNodeDateValue(XmlSearchNode, NodeName));
-            'GUID':
+            FieldType::Guid, FieldType::Media, FieldType::MediaSet:
                 FldRef.Value(FindNodeGuidValue(XmlSearchNode, NodeName));
             else
-                error(UnsupportedDataTypeErr, Format(FldRef.Type));
+                error(UnsupportedDataTypeErr, Format(FldRef.Type()));
         end;
 
     end;

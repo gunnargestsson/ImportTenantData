@@ -24,6 +24,16 @@ table 60306 "Import Project Data Buffer"
             DataClassification = SystemMetadata;
             Caption = 'Date Time Type';
         }
+        field(40; "Blob Type"; Blob)
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Blob Type';
+        }
+        field(50; "Image Type"; Media)
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Image Type';
+        }
     }
 
     keys
@@ -60,5 +70,16 @@ table 60306 "Import Project Data Buffer"
     begin
         RecRef.GetTable(Rec);
         FldRef := RecRef.Field(FldNo);
+    end;
+
+    procedure CopyBlobValueToImage(DataBufferFldRef: FieldRef): Guid
+    var
+        InStr: Instream;
+    begin
+        "Blob Type" := DataBufferFldRef.Value();
+        if "Blob Type".HasValue() then begin
+            "Blob Type".CreateInStream(InStr);
+            exit("Image Type".ImportStream(InStr, ''));
+        end;
     end;
 }

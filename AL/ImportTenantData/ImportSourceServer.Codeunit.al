@@ -68,12 +68,13 @@ codeunit 60323 "Import Source Server File"
         ImportSource.ID := GetImportSourceId();
         ImportSource."Setup Page Name" := ImportSourceMgt.GetPageName(page::"Server File Connect Setup Card");
         ImportSource."Codeunit Name" := ImportSourceMgt.GetCodeunitName(codeunit::"Import Source Server File");
-        ImportSource.Description := ServerFileConnect;
+        ImportSource."Content Codeunit Name" := ImportSourceMgt.GetCodeunitName(Codeunit::"Import Source Server Update");
+        ImportSource.Description := ServerFileConnectLbl;
         ImportSource.Insert();
     end;
 
     var
         Window: Dialog;
         ImportMsg: Label 'Importing File';
-        ServerFileConnect: Label 'Server File Connect', MaxLength = 50;
+        ServerFileConnectLbl: Label 'Server File Connect', MaxLength = 50;
 }

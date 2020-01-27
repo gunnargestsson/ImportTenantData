@@ -5,20 +5,20 @@ codeunit 60322 "Import Project Data Scheduler"
 
     end;
 
-    procedure ScheduleDataTransfer(var ImportProjectData: Record "Import Project Data")
+    procedure ScheduleDataTransfer(var ImportProjectData: Record "Import Project Data"; SecondsDelay: Integer)
     begin
         with ImportProjectData do begin
             FindSet();
             repeat
-                ScheduleDataTransferForTable(ImportProjectData);
+                ScheduleDataTransferForTable(ImportProjectData, SecondsDelay);
             until Next() = 0;
         end;
         Message(DataImportScheduledMsg);
     end;
 
-    local procedure ScheduleDataTransferForTable(var ImportProjectData: Record "Import Project Data")
+    local procedure ScheduleDataTransferForTable(var ImportProjectData: Record "Import Project Data"; SecondsDelay: Integer)
     begin
-        ScheduleJobQueueEntry(Codeunit::"Import Project Data Transfer", ImportProjectData.RecordId(), 10);
+        ScheduleJobQueueEntry(Codeunit::"Import Project Data Transfer", ImportProjectData.RecordId(), SecondsDelay);
     end;
 
     local procedure ScheduleJobQueueEntry(CodeunitId: Integer; RelatedRecordId: RecordID; SecondsDelay: Integer)
