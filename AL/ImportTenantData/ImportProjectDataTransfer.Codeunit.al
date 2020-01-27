@@ -204,13 +204,19 @@ codeunit 60321 "Import Project Data Transfer"
     var
         ImportProjectField: Record "Import Project Data Field";
         ImportProjectFieldMapping: Record "Import Project Field Mapping";
+        EmptyDestRecRef: RecordRef;
         DestFldRef: FieldRef;
+        EmptyDestFldRef: FieldRef;
         PrimaryKeyRef: KeyRef;
         FieldIndex: Integer;
     begin
+        EmptyDestRecRef.Open(DestRecRef.Number());
+        EmptyDestRecRef.Init();
         PrimaryKeyRef := DestRecRef.KeyIndex(1);
         for FieldIndex := 1 to PrimaryKeyRef.FieldCount() do begin
             DestFldRef := PrimaryKeyRef.FieldIndex(FieldIndex);
+            EmptyDestFldRef := EmptyDestRecRef.Field(DestFldRef.Number());
+            DestFldRef.Value(EmptyDestFldRef.Value());
             ImportProjectFieldMapping.SetRange("Project Table ID", ProjectTableId);
             ImportProjectFieldMapping.SetRange("Destination Table ID", DestRecRef.Number());
             ImportProjectFieldMapping.SetRange("Destination Field ID", DestFldRef.Number());
