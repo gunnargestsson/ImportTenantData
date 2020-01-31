@@ -224,6 +224,7 @@ codeunit 60321 "Import Project Data Transfer"
                 if ImportProjectField.Get(ProjectTableId, ImportProjectFieldMapping."Project Field ID") then
                     CopyValue(ImportProjectField, DestRecRef.Number(), ImportProjectField.GetFieldValueAsText(SrcRow), DestFldRef);
         end;
+        OnAfterPopulatePrimaryKey(ProjectTableId, SrcRow, DestRecRef);
     end;
 
     local procedure CopyValue(ImportProjectField: Record "Import Project Data Field"; DestinationTableId: Integer; SrcFldValueAsText: Text; var DestFldRef: FieldRef)
@@ -490,6 +491,12 @@ codeunit 60321 "Import Project Data Transfer"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterTableProcess(ImportProjectTableMapping: Record "Import Project Table Mapping"; SrcRowList: XmlNodeList; var DestRecRef: RecordRef)
+    begin
+
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterPopulatePrimaryKey(ProjectTableId: Guid; SrcRow: XmlNode; var DestRecRef: RecordRef)
     begin
 
     end;
