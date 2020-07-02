@@ -20,6 +20,7 @@ codeunit 60342 "SQL Connect Data Transfer"
         StartTime := RoundDateTime(CurrentDateTime());
         Window.Open(DialogMsg);
         with ImportProjectData do begin
+            SetCurrentKey("File Name");
             Total := Count();
             SetAutoCalcFields("Table Name");
             FindSet();
@@ -128,13 +129,17 @@ codeunit 60342 "SQL Connect Data Transfer"
     end;
 
     local procedure InitializeReferences(ImportProjectData: Record "Import Project Data"; ImportProjectTableMapping: Record "Import Project Table Mapping"; var SQLReader: DotNet O4N_SqlDataReader; var DestRecRef: RecordRef) RowCount: Integer
+    var
+        ImportProjectField: Record "Import Project Data Field";
+        FieldList: TextBuilder;
     begin
         if not SQLConnect.ExecuteReader(SQLConnection, StrSubstNo('SELECT COUNT(*) FROM [%1]', SQLConnect.GetSQLTableName(ImportProjectData."File Name")), SQLReader) then exit(0);
         DestRecRef.Open(ImportProjectTableMapping."Destination Table Id");
         if SQLReader.Read() then
             RowCount := SQLReader.GetInt32(0);
         SQLReader.Close();
-        SQLConnect.ExecuteReader(SQLConnection, StrSubstNo('SELECT * FROM [%1]', SQLConnect.GetSQLTableName(ImportProjectData."File Name")), SQLReader);
+        ImportProjectField.GetFieldList(ImportProjectData.ID, FieldList);
+        SQLConnect.ExecuteReader(SQLConnection, StrSubstNo('SELECT %1 FROM [%2]', FieldList.ToText(), SQLConnect.GetSQLTableName(ImportProjectData."File Name")), SQLReader);
     end;
 
     local procedure CopyFields(ImportProjectTableMapping: Record "Import Project Table Mapping"; SQLReader: DotNet O4N_SqlDataReader; var DestRecRef: RecordRef)
@@ -300,7 +305,6 @@ codeunit 60342 "SQL Connect Data Transfer"
     local procedure EvaluateFieldValue(ImportFieldType: Text; SQLReader: DotNet O4N_SqlDataReader; FieldIndex: Integer; var DestFldRef: FieldRef)
     var
         DateformulaType: DateFormula;
-        RecordIDType: RecordID;
         IntType: Integer;
     begin
         if ImportFieldType in ['DateTime', 'Date', 'Time'] then
@@ -343,11 +347,7 @@ codeunit 60342 "SQL Connect Data Transfer"
             FieldType::GUID:
                 DestFldRef.Value := SQLReader.GetGuid(FieldIndex);
             FieldType::RECORDID:
-                begin
-                    if not Evaluate(RecordIDType, SQLReader.GetString(FieldIndex), 9) then
-                        Clear(RecordIDType);
-                    DestFldRef.Value := RecordIDType;
-                end;
+                ; // Ignored
             else
                 Error(FieldTypeNotSupportedErr, UpperCase(Format(DestFldRef.Type())));
 

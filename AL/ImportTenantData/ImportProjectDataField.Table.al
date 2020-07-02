@@ -208,7 +208,20 @@ table 60305 "Import Project Data Field"
         ImportProjectDataField: Record "Import Project Data Field";
     begin
         ImportProjectDataField.SetRange(ID, ID);
-        ImportProjectDataField.SetFilter("Field ID", '<%1', "Field ID");
-        exit(ImportProjectDataField.Count());
+        ImportProjectDataField.SetRange("Field ID", 0, "Field ID");
+        exit(ImportProjectDataField.Count() - 1);
+    end;
+
+    procedure GetFieldList(ProjectTableID: Guid; var FieldList: TextBuilder)
+    var
+        ImportProjectDataField: Record "Import Project Data Field";
+    begin
+        ImportProjectDataField.SetRange(ID, ProjectTableID);
+        ImportProjectDataField.FindSet();
+        repeat
+            if FieldList.Length > 0 then
+                FieldList.Append(',');
+            FieldList.Append(StrSubstNo('Field%1', ImportProjectDataField."Field ID"));
+        until ImportProjectDataField.Next() = 0;
     end;
 }
