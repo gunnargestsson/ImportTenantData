@@ -10,6 +10,8 @@ codeunit 60330 "Azure Blob JSON Connect"
     begin
         TestField("Import Source ID");
         Setup.Get("Import Source ID");
+        if (Setup."Account Name" = '') or (Setup."Container Name" = '') or not Setup.HasPassword(Setup."Access Key ID") then
+            Error(AuthenticationForAzureBlobContainerMissingErr, AzureBlobConnectLbl);
         ImportFileList(Setup, BlobList);
         while true do begin
             RemoveDuplicates(Rec, BlobList);
@@ -126,7 +128,7 @@ codeunit 60330 "Azure Blob JSON Connect"
         ImportSource.ID := GetImportSourceId();
         ImportSource."Setup Page Name" := ImportSourceMgt.GetPageName(page::"Azure Blob Connect Setup Card");
         ImportSource."Codeunit Name" := ImportSourceMgt.GetCodeunitName(codeunit::"Azure Blob JSON Connect");
-        ImportSource.Description := AzureBlobConnect;
+        ImportSource.Description := AzureBlobConnectLbl;
         ImportSource.Insert();
     end;
 
@@ -134,7 +136,7 @@ codeunit 60330 "Azure Blob JSON Connect"
         Window: Dialog;
         ImportMsg: Label 'Importing File';
         AzureBlobJSONInterfaceErr: Label 'Azure Blob JSON interface not found';
-        AzureBlobConnect: Label 'Azure Blob Connect', MaxLength = 50;
-
+        AzureBlobConnectLbl: Label 'Azure Blob Connect', MaxLength = 50;
+        AuthenticationForAzureBlobContainerMissingErr: Label 'Authentication for Azure Blob container is missing in %1', Comment = '%1 = AzureBlobConnectLbl label';
 
 }

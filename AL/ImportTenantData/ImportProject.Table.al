@@ -31,7 +31,7 @@ table 60300 "Import Project"
             Caption = 'Import Source Description';
             Editable = false;
             FieldClass = FlowField;
-            CalcFormula = lookup ("Import Data Source".Description where (ID = field ("Import Source ID")));
+            CalcFormula = lookup ("Import Data Source".Description where(ID = field("Import Source ID")));
         }
 
     }
@@ -101,4 +101,19 @@ table 60300 "Import Project"
             until ImportData.Next() = 0;
         Window.Close();
     end;
+
+    procedure StartDataTransfer(var ImportProjectData: Record "Import Project Data"; ResumeTransfer: Boolean)
+    begin
+        ImportProjectData.FindFirst();
+        Get(ImportProjectData."Project ID");
+        TestField("Import Source ID");
+        OnStartDataTransfer(Rec, ImportProjectData, ResumeTransfer);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnStartDataTransfer(ImportProject: Record "Import Project"; var ImportProjectData: Record "Import Project Data"; ResumeTransfer: Boolean)
+    begin
+
+    end;
+
 }

@@ -11,6 +11,8 @@ codeunit 60323 "Import Source Server File"
     begin
         TestField("Import Source ID");
         Setup.Get("Import Source ID");
+        if Setup."File Path" = '' then
+            Error(SourceFileSystemPathMissingErr, ServerFileConnectLbl);
         ImportFileList(Setup, BlobList);
         while true do begin
             if BlobList.IsEmpty() then exit;
@@ -77,4 +79,5 @@ codeunit 60323 "Import Source Server File"
         Window: Dialog;
         ImportMsg: Label 'Importing File';
         ServerFileConnectLbl: Label 'Server File Connect', MaxLength = 50;
+        SourceFileSystemPathMissingErr: Label 'Server file system path is missing in %1', Comment = '%1 = ServerFileConnectLbl label';
 }

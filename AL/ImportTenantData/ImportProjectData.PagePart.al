@@ -122,11 +122,11 @@ page 60303 "Import Project Data Part"
 
                 trigger OnAction()
                 var
+                    ImportProject: Record "Import Project";
                     ImportProjectData: Record "Import Project Data";
-                    ImportProjDataTrans: Codeunit "Import Project Data Transfer";
                 begin
                     CurrPage.SetSelectionFilter(ImportProjectData);
-                    ImportProjDataTrans.ExecuteDataTransfer(ImportProjectData);
+                    ImportProject.StartDataTransfer(ImportProjectData, false);
                 end;
             }
             action("ResumeDataImport")
@@ -142,11 +142,11 @@ page 60303 "Import Project Data Part"
 
                 trigger OnAction()
                 var
+                    ImportProject: Record "Import Project";
                     ImportProjectData: Record "Import Project Data";
-                    ImportProjDataTrans: Codeunit "Import Project Data Transfer";
                 begin
                     CurrPage.SetSelectionFilter(ImportProjectData);
-                    ImportProjDataTrans.ResumeDataTransfer(ImportProjectData);
+                    ImportProject.StartDataTransfer(ImportProjectData, true);
                 end;
             }
             action("SceduleDataImport")
