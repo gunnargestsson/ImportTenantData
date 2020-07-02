@@ -7,7 +7,7 @@ codeunit 60323 "Import Source Server File"
         Setup: Record "Import Source Server File";
         ImportProjectData: Record "Import Project Data";
         BlobList: Record "Name/Value Buffer" temporary;
-        BlobListPage: Page "Server File List";
+        BlobListPage: Page "Server File Selection";
     begin
         TestField("Import Source ID");
         Setup.Get("Import Source ID");

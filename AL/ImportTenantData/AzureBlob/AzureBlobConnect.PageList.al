@@ -27,10 +27,6 @@ page 60332 "Azure Blob Connect Setup List"
                 {
                     ApplicationArea = All;
                 }
-                field("Access Key ID"; "Access Key ID")
-                {
-                    ApplicationArea = All;
-                }
             }
         }
     }

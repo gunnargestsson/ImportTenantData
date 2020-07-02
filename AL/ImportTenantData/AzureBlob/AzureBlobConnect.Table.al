@@ -1,7 +1,6 @@
 table 60330 "Azure Blob Connect Setup"
 {
     DataClassification = SystemMetadata;
-    Permissions = TableData "Service Password" = rimd;
     Caption = 'Azure Blob Connect Setup';
     DataCaptionFields = "Account Name";
     DrillDownPageId = "Azure Blob Connect Setup List";
@@ -29,7 +28,6 @@ table 60330 "Azure Blob Connect Setup"
         field(4; "Access Key ID"; guid)
         {
             DataClassification = SystemMetadata;
-            TableRelation = "Service Password".Key;
             Caption = 'Access Key ID';
         }
     }
@@ -72,44 +70,30 @@ table 60330 "Azure Blob Connect Setup"
     end;
 
     procedure SavePassword(var PasswordKey: Guid; PasswordText: Text)
-    var
-        ServicePassword: Record "Service Password";
     begin
-        if IsNullGuid(PasswordKey) or not ServicePassword.Get(PasswordKey) then begin
-            ServicePassword.SavePassword(PasswordText);
-            ServicePassword.Insert(true);
-            PasswordKey := ServicePassword.Key;
-            Modify;
-        end else begin
-            ServicePassword.SavePassword(PasswordText);
-            ServicePassword.Modify;
-        end;
+        if IsNullGuid(PasswordKey) then
+            PasswordKey := CreateGuid();
+        DeletePassword(PasswordKey);
+        IsolatedStorage.Set(PasswordKey, PasswordText);
+        Modify;
         Commit;
     end;
 
-    procedure GetPassword(PasswordKey: Guid): Text
-    var
-        ServicePassword: Record "Service Password";
+    procedure GetPassword(PasswordKey: Guid) PasswordText: Text
     begin
-        ServicePassword.Get(PasswordKey);
-        exit(ServicePassword.GetPassword);
+        if HasPassword(PasswordKey) then
+            IsolatedStorage.Get(PasswordKey, PasswordText);
     end;
 
     local procedure DeletePassword(PasswordKey: Guid)
-    var
-        ServicePassword: Record "Service Password";
     begin
-        if ServicePassword.Get(PasswordKey) then
-            ServicePassword.Delete;
+        if HasPassword(PasswordKey) then
+            IsolatedStorage.Delete(PasswordKey);
     end;
 
     procedure HasPassword(PasswordKey: Guid): Boolean
-    var
-        ServicePassword: Record "Service Password";
     begin
-        if not ServicePassword.Get(PasswordKey) then
-            exit(false);
-        exit(ServicePassword.GetPassword <> '');
+        exit(IsolatedStorage.Contains(PasswordKey));
     end;
 
     var

@@ -6,7 +6,7 @@ codeunit 60330 "Azure Blob JSON Connect"
         Setup: Record "Azure Blob Connect Setup";
         ImportProjectData: Record "Import Project Data";
         BlobList: Record "Azure Blob Connect List" temporary;
-        BlobListPage: Page "Azure Blob Connect List";
+        BlobListPage: Page "Azure Blob Connect Selection";
     begin
         TestField("Import Source ID");
         Setup.Get("Import Source ID");

@@ -3,8 +3,8 @@ table 60331 "Azure Blob Connect List"
     DataClassification = SystemMetadata;
     Caption = 'Azure Blob Connect List';
     DataCaptionFields = "File Name";
-    LookupPageId = "Azure Blob Connect List";
-    DrillDownPageId = "Azure Blob Connect List";
+    LookupPageId = "Azure Blob Connect Selection";
+    DrillDownPageId = "Azure Blob Connect Selection";
 
 
     fields

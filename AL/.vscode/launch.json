@@ -9,7 +9,7 @@
                             "port": 443,
                             "serverInstance":  "kappidev",
                             "authentication": "UserPassword",
-                            "startupObjectId":  130401,
+                            "startupObjectId":  60300,
                             "startupObjectType":  "Page",
                             "breakOnError":  false,
                             "launchBrowser":  true,

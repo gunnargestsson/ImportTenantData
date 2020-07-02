@@ -1,6 +1,7 @@
-page 60325 "Server File List"
+page 60325 "Server File Selection"
 {
     PageType = List;
+    Caption = 'File Selection';
     SourceTable = "Name/Value Buffer";
     SourceTableTemporary = true;
     Editable = false;

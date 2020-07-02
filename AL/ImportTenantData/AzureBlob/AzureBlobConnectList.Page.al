@@ -1,9 +1,9 @@
-page 60331 "Azure Blob Connect List"
+page 60331 "Azure Blob Connect Selection"
 {
     PageType = List;
+    Caption = 'Blob Selection';
     SourceTable = "Azure Blob Connect List";
     SourceTableTemporary = true;
-    Caption = 'Azure Blob Connect List';
     Editable = false;
 
     layout
