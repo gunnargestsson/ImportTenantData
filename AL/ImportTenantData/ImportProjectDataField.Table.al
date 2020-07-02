@@ -202,4 +202,13 @@ table 60305 "Import Project Data Field"
     begin
         exit(NodeMgt.FindNodeTextValue(Row, StrSubstNo('Field%1', "Field ID")));
     end;
+
+    procedure GetFieldIndex(): Integer
+    var
+        ImportProjectDataField: Record "Import Project Data Field";
+    begin
+        ImportProjectDataField.SetRange(ID, ID);
+        ImportProjectDataField.SetFilter("Field ID", '<%1', "Field ID");
+        exit(ImportProjectDataField.Count());
+    end;
 }

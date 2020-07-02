@@ -1,5 +1,6 @@
 codeunit 60340 "SQL Connect"
 {
+    // Server=host.containerhelper.internal;Database=PMNAV_CustomData;User Id=sa;Password=Nav.2018.is;
     TableNo = "Import Project";
     trigger OnRun()
     var
@@ -7,7 +8,7 @@ codeunit 60340 "SQL Connect"
         ImportProjectData: Record "Import Project Data";
         BlobList: Record "Name/Value Buffer" temporary;
         BlobListPage: Page "SQL Connect Table Selection";
-        SQLConnection: DotNet SqlConnection;
+        SQLConnection: DotNet O4N_SqlConnection;
         SQLCompanyName: Text[30];
     begin
         TestField("Import Source ID");
@@ -33,7 +34,7 @@ codeunit 60340 "SQL Connect"
         end;
     end;
 
-    local procedure OpenConnection(Setup: Record "SQL Connect Setup"; var SQLConnection: DotNet SqlConnection)
+    procedure OpenConnection(Setup: Record "SQL Connect Setup"; var SQLConnection: DotNet O4N_SqlConnection)
     var
         ConnectionString: Text;
     begin
@@ -45,11 +46,36 @@ codeunit 60340 "SQL Connect"
         SQLConnection.Open();
     end;
 
-    local procedure SelectCompany(var SQLConnection: DotNet SqlConnection) SQLCompanyName: Text[30]
+    procedure CloseConnection(var SQLConnection: DotNet O4N_SqlConnection)
+    begin
+        if IsNull(SQLConnection) then
+            exit;
+
+        if SQLConnection.State() = 1 then
+            SQLConnection.Close();
+        Clear(SQLConnection);
+    end;
+
+    procedure ExecuteReader(var SQLConnection: DotNet O4N_SqlConnection; SQLQuery: Text; var SQLReader: DotNet O4N_SqlDataReader): Boolean
+    var
+        SQLCommand: DotNet O4N_SqlCommand;
+    begin
+        SQLCommand := SQLCommand.SqlCommand(SQLQuery, SQLConnection);
+        SQLCommand.CommandTimeout(300);
+        SQLReader := SQLCommand.ExecuteReader();
+        exit(SQLReader.HasRows());
+    end;
+
+    procedure GetSQLTableName(TableName: Text) SQLTableName: Text
+    begin
+        SQLTableName := ConvertStr(TableName, '."\/%][''', '________');
+    end;
+
+    local procedure SelectCompany(var SQLConnection: DotNet O4N_SqlConnection) SQLCompanyName: Text[30]
     var
         CompanyList: Record "Name/Value Buffer" temporary;
         CompanySelection: Page "SQL Connect Company Selection";
-        SQLReader: DotNet SqlDataReader;
+        SQLReader: DotNet O4N_SqlDataReader;
     begin
         if not ExecuteReader(SQLConnection, 'SELECT DISTINCT [Company] FROM Object', SQLReader) then
             Error(NoObjectsFoundErr);
@@ -65,9 +91,9 @@ codeunit 60340 "SQL Connect"
         SQLCompanyName := CopyStr(CompanyList.Name, 1, MaxStrLen(SQLCompanyName));
     end;
 
-    local procedure ImportFileList(var SQLConnection: DotNet SqlConnection; SQLCompanyName: Text[30]; var BlobList: Record "Name/Value Buffer" temporary)
+    local procedure ImportFileList(var SQLConnection: DotNet O4N_SqlConnection; SQLCompanyName: Text[30]; var BlobList: Record "Name/Value Buffer" temporary)
     var
-        SQLReader: DotNet SqlDataReader;
+        SQLReader: DotNet O4N_SqlDataReader;
     begin
         if not ExecuteReader(SQLConnection, StrSubstNo('SELECT [Name],[MetaData] FROM Object WHERE [Company] = ''%1''', SQLCompanyName), SQLReader) then
             Error(NoObjectsFoundErr);
@@ -92,25 +118,6 @@ codeunit 60340 "SQL Connect"
         BlobList.DeleteAll();
     end;
 
-    local procedure CloseConnection(var SQLConnection: DotNet SqlConnection)
-    begin
-        if IsNull(SQLConnection) then
-            exit;
-
-        if SQLConnection.State() = 1 then
-            SQLConnection.Close();
-        Clear(SQLConnection);
-    end;
-
-    procedure ExecuteReader(var SQLConnection: DotNet SqlConnection; SQLQuery: Text; var SQLReader: DotNet SqlDataReader): Boolean
-    var
-        SQLCommand: DotNet SqlCommand;
-    begin
-        SQLCommand := SQLCommand.SqlCommand(SQLQuery, SQLConnection);
-        SQLCommand.CommandTimeout(300);
-        SQLReader := SQLCommand.ExecuteReader();
-        exit(SQLReader.HasRows());
-    end;
 
     local procedure GetImportSourceId() ImportSourceId: Guid
     begin
