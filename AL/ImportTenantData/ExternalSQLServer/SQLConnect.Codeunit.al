@@ -98,8 +98,16 @@ codeunit 60340 "SQL Connect"
         if not ExecuteReader(SQLConnection, StrSubstNo('SELECT [Name],[MetaData] FROM Object WHERE [Company] = ''%1''', SQLCompanyName), SQLReader) then
             Error(NoObjectsFoundErr);
         while SQLReader.Read() do
-            BlobList.AddNewEntry(SQLReader.GetString(0), SQLReader.GetString(1));
+            BlobList.AddNewEntry(SQLReader.GetString(0), FromBase64(SQLReader.GetString(1)));
         SQLReader.Close();
+    end;
+
+    local procedure FromBase64(Base64Text: Text): Text
+    var
+        TempBlob: Record TempBlob;
+    begin
+        TempBlob.FromBase64String(Base64Text);
+        exit(TempBlob.ReadAsTextWithCRLFLineSeparator());
     end;
 
     local procedure ImportFileContent(SQLCompanyName: Text[30]; var BlobList: Record "Name/Value Buffer"; var ImportProjectData: Record "Import Project Data")
