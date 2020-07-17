@@ -140,11 +140,11 @@ table 60302 "Import Project Data"
 
     procedure ExportData()
     var
-        TempBlob: Record TempBlob;
+        TempBlob: Codeunit "Temp Blob";
         FileMgt: Codeunit "File Management";
     begin
         CalcFields(Content);
-        TempBlob.Blob := Content;
+        TempBlob.FromRecord(Rec, FieldNo(Content));
         FileMgt.BLOBExport(TempBlob, "File Name", true);
     end;
 
@@ -169,10 +169,13 @@ table 60302 "Import Project Data"
 
     local procedure ConvertDateFormula() Xml: Text
     var
-        TempBlob: Record TempBlob;
+        TempBlob: Codeunit "Temp Blob";
+        TypeHelper: Codeunit "Type Helper";
+        InStr: Instream;
     begin
-        TempBlob.Blob := Content;
-        Xml := TempBlob.ReadAsTextWithCRLFLineSeparator();
+        TempBlob.FromRecord(Rec, FieldNo(Content));
+        TempBlob.CreateInStream(InStr, TextEncoding::UTF8);
+        Xml := TypeHelper.ReadAsTextWithSeparator(InStr, TypeHelper.LFSeparator());
         Xml := Xml.Replace('&#x1;', '&lt;C&gt;').Replace('&#x2;', '&lt;D&gt;').Replace('&#x3;', '&lt;WD&gt;').Replace('&#x4;', '&lt;W&gt;').Replace('&#x5;', '&lt;M&gt;').Replace('&#x6;', '&lt;Q&gt;').Replace('&#x7;', '&lt;Y&gt;');
     end;
 

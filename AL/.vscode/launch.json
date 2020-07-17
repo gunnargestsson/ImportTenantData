@@ -1,19 +1,18 @@
 {
     "version":  "0.2.0",
-    "configurations":  [                           
+    "configurations":  [
                            {
-                            "type":  "al",
-                            "request":  "launch",
-                            "name":  "Your own Windows  server",
-                            "server":  "https://traefik.kappi.is",
-                            "port": 443,
-                            "serverInstance":  "kappidev",
-                            "authentication": "UserPassword",
-                            "startupObjectId":  60300,
-                            "startupObjectType":  "Page",
-                            "breakOnError":  false,
-                            "launchBrowser":  true,
-                            "schemaUpdateMode": "Synchronize"
-                        }
+                               "type":  "al",
+                               "request":  "launch",
+                               "name":  "Local Sandbox (TD-dev)",
+                               "server":  "http://TD-dev",
+                               "serverInstance":  "BC",
+                               "port":  7049,
+                               "tenant":  "",
+                               "authentication":  "UserPassword",
+                               "startupObjectId":  60300,
+                               "startupObjectType":  "Page",
+                               "breakOnError":  true
+                           }
                        ]
 }

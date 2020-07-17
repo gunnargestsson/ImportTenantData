@@ -16,10 +16,12 @@ page 60307 "Import Project Data Field Part"
                 field("Field ID"; "Field ID")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Field ID field';
                 }
                 field("Field Name"; "Field Name")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Field Name field';
                 }
             }
         }

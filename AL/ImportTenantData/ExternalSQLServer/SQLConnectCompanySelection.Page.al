@@ -17,6 +17,7 @@ page 60345 "SQL Connect Company Selection"
                 field("Name"; "Name")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Name field';
                 }
             }
         }

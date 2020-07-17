@@ -17,10 +17,12 @@ page 60323 "Import Source Server List"
                 field("Source ID"; "Source ID")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Source ID field';
                 }
                 field("File Path"; "File Path")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the File Path field';
                 }
             }
         }

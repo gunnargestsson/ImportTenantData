@@ -18,14 +18,17 @@ page 60332 "Azure Blob Connect Setup List"
                 field("Source ID"; "Source ID")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Source ID field';
                 }
                 field("Account Name"; "Account Name")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Account Name field';
                 }
                 field("Container Name"; "Container Name")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Container Name field';
                 }
             }
         }

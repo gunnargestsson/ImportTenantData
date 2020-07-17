@@ -17,26 +17,31 @@ page 60311 "Import Project Field Map. Part"
                 field("Project Field ID"; "Project Field ID")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Project Field ID field';
                 }
                 field("Project Field Name"; "Project Field Name")
                 {
                     ApplicationArea = All;
                     QuickEntry = false;
+                    ToolTip = 'Specifies the value of the Project Field Name field';
                 }
                 field("Destination Field ID"; "Destination Field ID")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Destination Field ID field';
                 }
                 field("Destination Field Name"; "Destination Field Name")
                 {
                     ApplicationArea = All;
                     QuickEntry = false;
-                    DrillDownPageId = "Fields";
+                    DrillDownPageId = "Page Fields Selection List";
+                    ToolTip = 'Specifies the value of the Destination Field Name field';
                 }
                 field("Transformation Rule"; "Transformation Rule")
                 {
                     ApplicationArea = All;
                     QuickEntry = false;
+                    ToolTip = 'Specifies the value of the Transformation Rule field';
                 }
 
                 field(ShowWarning; GetWarning("Destination Field ID"))

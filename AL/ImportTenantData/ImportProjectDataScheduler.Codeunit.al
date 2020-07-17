@@ -32,7 +32,6 @@ codeunit 60322 "Import Project Data Scheduler"
         JobQueueEntry."Object ID to Run" := CodeunitId;
         JobQueueEntry."Record ID to Process" := RelatedRecordId;
         JobQueueEntry."Run in User Session" := false;
-        JobQueueEntry.Priority := 1000;
         CODEUNIT.Run(CODEUNIT::"Job Queue - Enqueue", JobQueueEntry);
     end;
 

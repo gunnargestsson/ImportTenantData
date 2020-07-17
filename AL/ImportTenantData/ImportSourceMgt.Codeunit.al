@@ -38,7 +38,7 @@ codeunit 60320 "Import Source Mgt."
         exit(GetObjectName(PageID, AllObj."Object Type"::Page));
     end;
 
-    local procedure GetObjectID(ObjectName: Text[50]; "ObjectType": Option) ObjectID: Integer
+    local procedure GetObjectID(ObjectName: Text[50]; "ObjectType": Option): Integer
     var
         AllObj: Record AllObj;
     begin
@@ -48,7 +48,7 @@ codeunit 60320 "Import Source Mgt."
             exit(AllObj."Object ID");
     end;
 
-    local procedure GetObjectName(ObjectID: Integer; "ObjectType": Option) ObjectName: Text[50]
+    local procedure GetObjectName(ObjectID: Integer; "ObjectType": Option): Text[50]
     var
         AllObj: Record AllObj;
     begin

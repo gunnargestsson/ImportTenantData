@@ -16,22 +16,27 @@ page 60331 "Azure Blob Connect Selection"
                 {
                     ApplicationArea = All;
                     Visible = False;
+                    ToolTip = 'Specifies the value of the File Path field';
                 }
                 field("File Name"; "File Name")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the File Name field';
                 }
                 field("Modified Date"; "Modified Date")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Modified Date field';
                 }
                 field("Modified Time"; "Modified Time")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Modified Time field';
                 }
                 field("Content Length"; "Content Length")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Content Length field';
                 }
             }
         }

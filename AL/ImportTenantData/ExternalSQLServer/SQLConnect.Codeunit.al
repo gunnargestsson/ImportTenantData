@@ -104,22 +104,29 @@ codeunit 60340 "SQL Connect"
 
     local procedure FromBase64(Base64Text: Text): Text
     var
-        TempBlob: Record TempBlob;
+        TempBlob: Codeunit "Temp Blob";
+        TypeHelper: Codeunit "Type Helper";
+        Base64: Codeunit "Base64 Convert";
+        OutStr: OutStream;
+        InStr: Instream;
     begin
-        TempBlob.FromBase64String(Base64Text);
-        exit(TempBlob.ReadAsTextWithCRLFLineSeparator());
+        TempBlob.CreateOutStream(OutStr);
+        Base64.FromBase64(Base64Text, OutStr);
+        TempBlob.CreateInStream(InStr, TextEncoding::UTF8);
+        exit(TypeHelper.ReadAsTextWithSeparator(InStr, TypeHelper.LFSeparator()));
     end;
 
     local procedure ImportFileContent(SQLCompanyName: Text[30]; var BlobList: Record "Name/Value Buffer"; var ImportProjectData: Record "Import Project Data")
     var
-        TempBlob: Record TempBlob;
+        OutStr: OutStream;
     begin
         if BlobList.FindSet() then
             repeat
-                TempBlob.WriteAsText(BlobList.GetValue(), TextEncoding::UTF8);
                 ImportProjectData."File Name" := CopyStr(StrSubStNo('%1$%2', SQLCompanyName, BlobList."Name"), 1, MaxStrLen(ImportProjectData."File Name"));
-                ImportProjectData."Content Length" := TempBlob.Blob.Length();
-                ImportProjectData.Content := TempBlob.Blob;
+                Clear(ImportProjectData.Content);
+                ImportProjectData.Content.CreateOutStream(OutStr, TextEncoding::UTF8);
+                OutStr.WriteText(BlobList.GetValue());
+                ImportProjectData."Content Length" := ImportProjectData.Content.Length();
                 ImportProjectData.Insert(true);
                 Commit();
             until BlobList.Next() = 0;

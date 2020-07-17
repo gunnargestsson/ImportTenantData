@@ -296,7 +296,8 @@ codeunit 60329 "Xml File Data Transfer"
 
     local procedure EvaluateFieldValue(ImportFieldType: Text; BlobCompressed: Boolean; FieldValue: Text; var DestFldRef: FieldRef)
     var
-        TempBlob: Record TempBlob;
+        TempBlob: Codeunit "Temp Blob";
+        Base64: Codeunit "Base64 Convert";
         DateformulaType: DateFormula;
         RecordIDType: RecordID;
         BooleanType: Boolean;
@@ -309,6 +310,7 @@ codeunit 60329 "Xml File Data Transfer"
         TimeType: Time;
         GuidType: Guid;
         ClosingDate: Boolean;
+        OutStr: OutStream;
     begin
         case ImportFieldType of
             format(FieldType::DateTime):
@@ -410,8 +412,9 @@ codeunit 60329 "Xml File Data Transfer"
                 begin
                     if BlobCompressed then
                         DeflateB64(FieldValue);
-                    TempBlob.FromBase64String(FieldValue);
-                    DestFldRef.Value(TempBlob.Blob);
+                    TempBlob.CreateOutStream(OutStr);
+                    Base64.FromBase64(FieldValue, OutStr);
+                    TempBlob.ToFieldRef(DestFldRef);
                 end;
             FieldType::GUID:
                 begin
@@ -437,8 +440,9 @@ codeunit 60329 "Xml File Data Transfer"
 
     local procedure DeflateB64(var b64string: Text)
     var
-        CompressedBlob: Record TempBlob;
-        TempBlob: Record TempBlob;
+        CompressedBlob: Codeunit "Temp Blob";
+        TempBlob: Codeunit "Temp Blob";
+        Base64: Codeunit "Base64 Convert";
         DeflateStream: DotNet O4N_DeflateStream;
         StreamReader: DotNet O4N_StreamReader;
         CompressionMode: DotNet O4N_CompressionMode;
@@ -446,14 +450,16 @@ codeunit 60329 "Xml File Data Transfer"
         InStr: Instream;
     begin
         if b64string = '' then exit;
-        CompressedBlob.FromBase64String(b64string);
-        if CompressedBlob.Blob.Length() = 0 then exit;
-        CompressedBlob.Blob.CreateInStream(InStr);
+        CompressedBlob.CreateOutStream(OutStr);
+        Base64.FromBase64(b64string, OutStr);
+        if CompressedBlob.Length() = 0 then exit;
+        CompressedBlob.CreateInStream(InStr);
         DeflateStream := DeflateStream.DeflateStream(InStr, CompressionMode.Decompress);
         StreamReader := StreamReader.StreamReader(DeflateStream);
-        TempBlob.Blob.CreateOutStream(OutStr);
+        TempBlob.CreateOutStream(OutStr);
         StreamReader.BaseStream.CopyTo(OutStr);
-        b64string := TempBlob.ToBase64String();
+        TempBlob.CreateInStream(InStr);
+        b64string := Base64.ToBase64(InStr);
     end;
 
 

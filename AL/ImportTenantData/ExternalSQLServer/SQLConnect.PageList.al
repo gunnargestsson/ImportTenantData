@@ -18,10 +18,12 @@ page 60342 "SQL Connect Setup List"
                 field("Source ID"; "Source ID")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Source ID field';
                 }
                 field(Description; Description)
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Description field';
                 }
             }
         }

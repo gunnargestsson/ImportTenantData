@@ -18,6 +18,7 @@ page 60340 "SQL Connect Setup Card"
                 {
                     ApplicationArea = All;
                     Visible = false;
+                    ToolTip = 'Specifies the value of the Source ID field';
                 }
                 field(Description; Description)
                 {
@@ -30,6 +31,7 @@ page 60340 "SQL Connect Setup Card"
                     ApplicationArea = All;
                     Caption = 'SQL Connection String';
                     ExtendedDatatype = Masked;
+                    ToolTip = 'Specifies the value of the SQL Connection String field';
                     trigger OnValidate()
                     begin
                         SavePassword("Connection String Key ID", ConnectionStringKey);

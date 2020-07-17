@@ -1,0 +1,18 @@
+trigger:
+- '*'
+
+schedules:
+- cron: "0 4 * * 6"
+  displayName: Weekly build
+  branches:
+    include:
+    - master
+
+variables:
+- group: BusinessCentral16
+- group: InsiderBuilds
+
+extends:
+  template: CI.yml
+  parameters:
+    version: "nextmajor"

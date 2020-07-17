@@ -19,6 +19,7 @@ page 60324 "Server File Connect Setup Card"
                 {
                     ApplicationArea = All;
                     Visible = false;
+                    ToolTip = 'Specifies the value of the Source ID field';
                 }
                 field("File Path"; "File Path")
                 {

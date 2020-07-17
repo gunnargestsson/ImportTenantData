@@ -17,6 +17,7 @@ page 60346 "SQL Connect Table Selection"
                 field("Name"; "Name")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Name field';
                 }
             }
         }

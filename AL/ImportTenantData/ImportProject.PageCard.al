@@ -102,12 +102,12 @@ page 60301 "Import Project Card"
                 trigger OnAction()
                 var
                     ImportProjectData: Record "Import Project Data";
-                    TempBlob: Record TempBlob;
+                    TempBlob: Codeunit "Temp Blob";
                     FileMgt: Codeunit "File Management";
                     Xml: XmlPort "Export Project Mapping XmlPort";
                     OutStr: OutStream;
                 begin
-                    TempBlob.Blob.CreateOutStream(OutStr);
+                    TempBlob.CreateOutStream(OutStr);
                     ImportProjectData.SetRange("Project ID", ID);
                     Xml.SetTableView(ImportProjectData);
                     xml.SetDestination(OutStr);
@@ -128,14 +128,13 @@ page 60301 "Import Project Card"
 
                 trigger OnAction()
                 var
-                    ImportProjectData: Record "Import Project Data";
-                    TempBlob: Record TempBlob;
+                    TempBlob: Codeunit "Temp Blob";
                     FileMgt: Codeunit "File Management";
                     Xml: XmlPort "Import Project Mapping XmlPort";
                     InStr: InStream;
                 begin
                     FileMgt.BLOBImport(TempBlob, FileMgt.GetSafeFileName(StrSubstNo(DefaultFileNameTxt, Description)));
-                    TempBlob.Blob.CreateInStream(InStr);
+                    TempBlob.CreateInStream(InStr);
                     Xml.SetSource(InStr);
                     Xml.SetProjectID(ID);
                     Xml.Import();

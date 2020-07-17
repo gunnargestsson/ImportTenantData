@@ -28,14 +28,14 @@ codeunit 60330 "Azure Blob JSON Connect"
         end;
     end;
 
-    procedure GetAzureBlobJSONInterfaceCodeunitName(): Text
+    procedure GetAzureBlobJSONInterfaceCodeunitName(): Text[30]
     begin
         exit('Azure Blob JSON Interface');
     end;
 
     local procedure ImportFileList(Setup: Record "Azure Blob Connect Setup"; var BlobList: Record "Azure Blob Connect List" temporary)
     var
-        Tempblob: Record TempBlob;
+        Buffer: Record "Name/Value Buffer" temporary;
         ImportSourceMgt: Codeunit "Import Source Mgt.";
         JObject: JsonObject;
         JSON: Text;
@@ -47,9 +47,9 @@ codeunit 60330 "Azure Blob JSON Connect"
         SetConfiguration(Setup."Account Name", Setup."Container Name", Setup.GetPassword(Setup."Access Key ID"), JObject);
         JObject.Add('Method', 'ListBlob');
         JObject.WriteTo(JSON);
-        Tempblob.WriteAsText(JSON, TextEncoding::UTF8);
-        Codeunit.Run(ImportSourceMgt.GetCodeunitID(GetAzureBlobJSONInterfaceCodeunitName()), Tempblob);
-        JObject.ReadFrom(Tempblob.ReadAsTextWithCRLFLineSeparator());
+        Buffer.AddNewEntry('', JSON);
+        Codeunit.Run(ImportSourceMgt.GetCodeunitID(GetAzureBlobJSONInterfaceCodeunitName()), Buffer);
+        JObject.ReadFrom(Buffer.GetValue());
         BlobList.ReadFromJSON(JObject);
     end;
 
@@ -68,7 +68,8 @@ codeunit 60330 "Azure Blob JSON Connect"
 
     local procedure ImportFileContent(Setup: Record "Azure Blob Connect Setup"; var BlobList: Record "Azure Blob Connect List"; var ImportProjectData: Record "Import Project Data")
     var
-        TempBlob: Record TempBlob;
+        TempBlob: Codeunit "Temp Blob";
+        RecRef: RecordRef;
     begin
         Window.Open(ImportMsg + '\\#1###################################');
         if BlobList.FindSet() then
@@ -78,30 +79,34 @@ codeunit 60330 "Azure Blob JSON Connect"
                 ImportProjectData."Last Modified" := CreateDateTime(BlobList."Modified Date", BlobList."Modified Time");
                 ImportProjectData."Content Length" := BlobList."Content Length";
                 GetBlob(Setup, BlobList."File Name", TempBlob);
-                ImportProjectData.Content := TempBlob.Blob;
-                ImportProjectData.Insert(true);
+                RecRef.GetTable(ImportProjectData);
+                TempBlob.ToRecordRef(RecRef, ImportProjectData.FieldNo(Content));
+                RecRef.Insert(true);
                 Commit();
             until BlobList.Next() = 0;
         Window.Close();
     end;
 
-    local procedure GetBlob(Setup: Record "Azure Blob Connect Setup"; FileName: Text; var TempBlob: Record Tempblob)
+    local procedure GetBlob(Setup: Record "Azure Blob Connect Setup"; FileName: Text; var TempBlob: Codeunit "Temp Blob")
     var
+        Buffer: Record "Name/Value Buffer" temporary;
         ImportSourceMgt: Codeunit "Import Source Mgt.";
+        Base64: Codeunit "Base64 Convert";
         JObject: JsonObject;
         JToken: JsonToken;
+        OutStr: OutStream;
         JSON: Text;
     begin
         SetConfiguration(Setup."Account Name", Setup."Container Name", Setup.GetPassword(Setup."Access Key ID"), JObject);
         JObject.Add('Method', 'GetBlob');
         JObject.Add('Url', 'https://' + Setup."Account Name" + '.blob.core.windows.net/' + Setup."Container Name" + '/' + FileName);
         JObject.WriteTo(JSON);
-        Tempblob.WriteAsText(JSON, TextEncoding::UTF8);
-        Codeunit.Run(ImportSourceMgt.GetCodeunitID(GetAzureBlobJSONInterfaceCodeunitName()), Tempblob);
-        JObject.ReadFrom(Tempblob.ReadAsTextWithCRLFLineSeparator());
+        Buffer.AddNewEntry('', JSON);
+        Codeunit.Run(ImportSourceMgt.GetCodeunitID(GetAzureBlobJSONInterfaceCodeunitName()), Buffer);
+        JObject.ReadFrom(Buffer.GetValue());
         JObject.Get('Content', JToken);
-        Tempblob.Init();
-        Tempblob.FromBase64String(JToken.AsValue().AsText());
+        TempBlob.CreateOutStream(OutStr);
+        Base64.FromBase64(JToken.AsValue().AsText(), OutStr);
     end;
 
     local procedure SetConfiguration(AccountName: Text; AccountContainer: Text; AccountAccessKey: Text; var JObject: JsonObject)

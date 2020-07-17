@@ -15,9 +15,8 @@ codeunit 60310 "Import Project Apply Mapping"
         if ProjectDataInfo.FindSet() then
             repeat
                 ProjectTableID := FindMatchingTable(ProjectDataInfo);
-                if not IsNullGuid(ProjectTableID) then begin
+                if not IsNullGuid(ProjectTableID) then
                     AddTableMapping(ProjectTableID, ProjectDataInfo.ID, TableMapping, FieldMapping);
-                end;
             until ProjectDataInfo.Next() = 0;
     end;
 

@@ -16,6 +16,7 @@ page 60310 "Import Project Table Mappings"
                 {
                     ApplicationArea = All;
                     DrillDownPageId = "All Objects with Caption";
+                    ToolTip = 'Specifies the value of the Destination Table ID field';
                     trigger OnValidate()
                     begin
                         CurrPage.SaveRecord();
@@ -25,27 +26,32 @@ page 60310 "Import Project Table Mappings"
                 {
                     ApplicationArea = All;
                     QuickEntry = false;
+                    ToolTip = 'Specifies the value of the Destination Table Name field';
 
                 }
                 field("Destination Table Caption"; "Destination Table Caption")
                 {
                     ApplicationArea = All;
                     QuickEntry = false;
+                    ToolTip = 'Specifies the value of the Destination Table Caption field';
                 }
                 field("Destination Table Record Count"; "Destination Table Record Count")
                 {
                     ApplicationArea = All;
                     QuickEntry = false;
+                    ToolTip = 'Specifies the value of the Destination Table Record Count field';
                 }
                 field("No. of Imported Records"; "No. of Imported Records")
                 {
                     ApplicationArea = All;
                     Editable = false;
+                    ToolTip = 'Specifies the value of the No. of Imported Records field';
                 }
                 field("No. of Records"; "No. of Records")
                 {
                     ApplicationArea = All;
                     Editable = false;
+                    ToolTip = 'Specifies the value of the No. of Records field';
                 }
                 field(TemplateRecord; Format("Template Record"))
                 {
@@ -63,7 +69,7 @@ page 60310 "Import Project Table Mappings"
             {
                 ApplicationArea = All;
                 Caption = 'Fields';
-                SubPageLink = "Project Table ID" = field ("Project Table ID"), "Destination Table ID" = field ("Destination Table ID");
+                SubPageLink = "Project Table ID" = field("Project Table ID"), "Destination Table ID" = field("Destination Table ID");
             }
         }
     }

@@ -2,6 +2,12 @@
 	"folders": [
 		{
 			"path": "AL"
+		},
+		{
+			"path": "scripts"
+		},
+		{
+			"path": "ALTests"
 		}
 	],
 	"settings": {}

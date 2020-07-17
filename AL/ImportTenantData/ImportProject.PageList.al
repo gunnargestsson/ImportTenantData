@@ -19,19 +19,23 @@ page 60300 "Import Project List"
                 {
                     ApplicationArea = All;
                     Visible = false;
+                    ToolTip = 'Specifies the value of the ID field';
                 }
                 field("Import Source ID"; "Import Source ID")
                 {
                     ApplicationArea = All;
                     Visible = false;
+                    ToolTip = 'Specifies the value of the Import Source ID field';
                 }
                 field(Description; Description)
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Description field';
                 }
                 field("Import Source Description"; "Import Source Description")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the Import Source Description field';
                 }
             }
         }

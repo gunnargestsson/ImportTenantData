@@ -37,7 +37,8 @@ codeunit 60323 "Import Source Server File"
 
     local procedure ImportFileContent(Setup: Record "Import Source Server File"; var BlobList: Record "Name/Value Buffer"; var ImportProjectData: Record "Import Project Data")
     var
-        TempBlob: Record TempBlob;
+        RecRef: RecordRef;
+        TempBlob: Codeunit "Temp Blob";
         FileMgt: Codeunit "File Management";
     begin
         Window.Open(ImportMsg + '\\#1###################################');
@@ -46,10 +47,12 @@ codeunit 60323 "Import Source Server File"
                 Window.Update(1, BlobList."Name");
                 FileMgt.BLOBImportFromServerFile(TempBlob, BlobList.Name);
                 ImportProjectData."File Name" := BlobList."Name";
-                ImportProjectData."Content Length" := TempBlob.Blob.Length();
-                ImportProjectData.Content := TempBlob.Blob;
-                ImportProjectData.Insert(true);
+                ImportProjectData."Content Length" := TempBlob.Length();
+                RecRef.GetTable(ImportProjectData);
+                TempBlob.ToRecordRef(RecRef, ImportProjectData.FieldNo(Content));
+                RecRef.Insert(true);
                 Commit();
+                RecRef.SetTable(ImportProjectData);
             until BlobList.Next() = 0;
         Window.Close();
     end;

@@ -2,15 +2,17 @@ codeunit 60305 "Import Project Node Mgt."
 {
     procedure SetFieldValue(var RecRef: RecordRef; FldNo: Integer; XmlSearchNode: XmlNode; NodeName: Text): Boolean
     var
-        TempBlob: Record TempBlob;
+        TempBlob: Codeunit "Temp Blob";
         FldRef: FieldRef;
+        OutStr: OutStream;
     begin
         FldRef := RecRef.Field(FldNo);
         case FldRef.Type() of
             FieldType::Blob:
                 begin
-                    TempBlob.WriteAsText(FindNodeTextValue(XmlSearchNode, NodeName), TextEncoding::Windows);
-                    FldRef.Value(TempBlob.Blob);
+                    TempBlob.CreateOutStream(OutStr, TextEncoding::Windows);
+                    OutStr.WriteText(FindNodeTextValue(XmlSearchNode, NodeName));
+                    TempBlob.ToFieldRef(FldRef);
                 end;
             FieldType::Text, FieldType::Code:
                 FldRef.Value(CopyStr(FindNodeTextValue(XmlSearchNode, NodeName), 1, FldRef.Length()));

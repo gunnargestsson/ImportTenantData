@@ -17,16 +17,19 @@ page 60303 "Import Project Data Part"
                 {
                     ApplicationArea = All;
                     Editable = false;
+                    ToolTip = 'Specifies the value of the File Name field';
                 }
                 field("Last Modified"; "Last Modified")
                 {
                     ApplicationArea = All;
                     Editable = false;
+                    ToolTip = 'Specifies the value of the Last Modified field';
                 }
                 field("Content Length"; "Content Length")
                 {
                     ApplicationArea = All;
                     Editable = false;
+                    ToolTip = 'Specifies the value of the Content Length field';
                 }
                 field("Missing Record Handling"; "Missing Record Handling")
                 {

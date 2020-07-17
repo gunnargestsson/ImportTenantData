@@ -19,6 +19,7 @@ page 60330 "Azure Blob Connect Setup Card"
                 {
                     ApplicationArea = All;
                     Visible = false;
+                    ToolTip = 'Specifies the value of the Source ID field';
                 }
                 field("Account Name"; "Account Name")
                 {
@@ -37,6 +38,7 @@ page 60330 "Azure Blob Connect Setup Card"
                     ApplicationArea = All;
                     Caption = 'Access Key';
                     ExtendedDatatype = Masked;
+                    ToolTip = 'Specifies the value of the Access Key field';
                     trigger OnValidate()
                     begin
                         SavePassword("Access Key ID", AccessKey);

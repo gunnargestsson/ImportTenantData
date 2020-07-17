@@ -222,7 +222,7 @@ codeunit 60342 "SQL Connect Data Transfer"
     var
         ImportProjectFieldMapping: Record "Import Project Field Mapping";
         ImportProjectDataBuffer: Record "Import Project Data Buffer" temporary;
-        TempBlob: Record TempBlob;
+        TempBlob: Codeunit "Temp Blob";
         DataBufferFldRef: FieldRef;
         SrcFldValueAsText: Text;
         Handled: Boolean;
@@ -243,7 +243,7 @@ codeunit 60342 "SQL Connect Data Transfer"
                         begin
                             ImportProjectDataBuffer.GetFieldAsFieldRef(ImportProjectDataBuffer.FieldNo("Blob Type"), DataBufferFldRef);
                             GetBlobValue(SQLReader, FieldIndex, ImportProjectField.Compressed, TempBlob);
-                            DataBufferFldRef.Value(TempBlob.Blob);
+                            TempBlob.ToFieldRef(DataBufferFldRef);
                             if DestFldRef.Type() = FieldType::BLOB then
                                 DestFldRef.Value(DataBufferFldRef.Value)
                             else
@@ -354,7 +354,7 @@ codeunit 60342 "SQL Connect Data Transfer"
         end;
     end;
 
-    local procedure GetBlobValue(SQLReader: DotNet O4N_SqlDataReader; FieldIndex: Integer; Compressed: Boolean; var TempBlob: Record TempBlob)
+    local procedure GetBlobValue(SQLReader: DotNet O4N_SqlDataReader; FieldIndex: Integer; Compressed: Boolean; var TempBlob: Codeunit "Temp Blob")
     var
         MemoryStream: Dotnet O4N_MemoryStream;
         DeflateStream: DotNet O4N_DeflateStream;
@@ -365,7 +365,7 @@ codeunit 60342 "SQL Connect Data Transfer"
         if SQLReader.IsDBNull(FieldIndex) then exit;
         MemoryStream := MemoryStream.MemoryStream(SQLReader.GetSqlBytes(FieldIndex).Value());
         if MemoryStream.Length() = 0 then exit;
-        TempBlob.Blob.CreateOutStream(OutStr);
+        TempBlob.CreateOutStream(OutStr);
         if Compressed then begin
             DeflateStream := DeflateStream.DeflateStream(MemoryStream, CompressionMode.Decompress);
             StreamReader := StreamReader.StreamReader(DeflateStream);
