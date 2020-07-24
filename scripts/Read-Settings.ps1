@@ -100,5 +100,3 @@ Write-Host "##vso[task.setvariable variable=testCodeunitId]$testCodeunitId"
 $testMethodName = $settings.TestMethod.MethodName
 Write-Host "Set testMethodName = $testMethodName"
 Write-Host "##vso[task.setvariable variable=testMethodName]$testMethodName"
-
-$navContainerHelperConfig.genericImageName = 'mcr.microsoft.com/dynamicsnav:{0}-generic-dev'

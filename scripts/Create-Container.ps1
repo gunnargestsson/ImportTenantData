@@ -21,6 +21,9 @@
     [bool] $reuseContainer = ($ENV:REUSECONTAINER -eq "True")
 )
 
+
+$navContainerHelperConfig.genericImageName = 'mcr.microsoft.com/dynamicsnav:{0}-generic-dev'
+
 if (-not ($artifact)) {
     if ($ENV:ARTIFACTURL) {
         Write-Host "Using Artifact Url variable"
