@@ -34,7 +34,7 @@ page 60311 "Import Project Field Map. Part"
                 {
                     ApplicationArea = All;
                     QuickEntry = false;
-                    DrillDownPageId = "Page Fields Selection List";
+                    DrillDownPageId = "Fields Selection List";
                     ToolTip = 'Specifies the value of the Destination Field Name field';
                 }
                 field("Transformation Rule"; "Transformation Rule")

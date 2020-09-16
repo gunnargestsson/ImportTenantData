@@ -437,29 +437,33 @@ codeunit 60329 "Xml File Data Transfer"
 
         end;
     end;
+    /*     local procedure DeflateB64(var b64string: Text)
+        var
+            CompressedBlob: Codeunit "Temp Blob";
+            TempBlob: Codeunit "Temp Blob";
+            Base64: Codeunit "Base64 Convert";
+            DeflateStream: DotNet O4N_DeflateStream;
+            StreamReader: DotNet O4N_StreamReader;
+            CompressionMode: DotNet O4N_CompressionMode;
+            OutStr: OutStream;
+            InStr: Instream;
+        begin        
+            if b64string = '' then exit;
+            CompressedBlob.CreateOutStream(OutStr);
+            Base64.FromBase64(b64string, OutStr);
+            if CompressedBlob.Length() = 0 then exit;
+            CompressedBlob.CreateInStream(InStr);
+            DeflateStream := DeflateStream.DeflateStream(InStr, CompressionMode.Decompress);
+            StreamReader := StreamReader.StreamReader(DeflateStream);
+            TempBlob.CreateOutStream(OutStr);
+            StreamReader.BaseStream.CopyTo(OutStr);
+            TempBlob.CreateInStream(InStr);
+            b64string := Base64.ToBase64(InStr);
+        end;  */
 
     local procedure DeflateB64(var b64string: Text)
-    var
-        CompressedBlob: Codeunit "Temp Blob";
-        TempBlob: Codeunit "Temp Blob";
-        Base64: Codeunit "Base64 Convert";
-        DeflateStream: DotNet O4N_DeflateStream;
-        StreamReader: DotNet O4N_StreamReader;
-        CompressionMode: DotNet O4N_CompressionMode;
-        OutStr: OutStream;
-        InStr: Instream;
     begin
-        if b64string = '' then exit;
-        CompressedBlob.CreateOutStream(OutStr);
-        Base64.FromBase64(b64string, OutStr);
-        if CompressedBlob.Length() = 0 then exit;
-        CompressedBlob.CreateInStream(InStr);
-        DeflateStream := DeflateStream.DeflateStream(InStr, CompressionMode.Decompress);
-        StreamReader := StreamReader.StreamReader(DeflateStream);
-        TempBlob.CreateOutStream(OutStr);
-        StreamReader.BaseStream.CopyTo(OutStr);
-        TempBlob.CreateInStream(InStr);
-        b64string := Base64.ToBase64(InStr);
+        Error(BlobCompressedFieldsNotSupportedErr);
     end;
 
 
@@ -511,6 +515,7 @@ codeunit 60329 "Xml File Data Transfer"
         FieldTypeTransformationNotSupportedErr: Label 'Field value transformation from type %1 to %2 not supported!';
         DataImportFinishedMsg: Label 'Data Import Completed. Duration %1';
         UnableToDeflateB64StringErr: Label 'Unable to deflate base 64 string';
+        BlobCompressedFieldsNotSupportedErr: Label 'Compressed Blob fields are not supported in SaaS setup';
         Window: Dialog;
 
 }
