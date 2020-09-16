@@ -461,10 +461,24 @@ codeunit 60329 "Xml File Data Transfer"
             b64string := Base64.ToBase64(InStr);
         end;  */
 
+    // local procedure DeflateB64(var b64string: Text)
+    // begin
+    //     Error(BlobCompressedFieldsNotSupportedErr);
+    // end;
+
     local procedure DeflateB64(var b64string: Text)
+    var
+        JsonMgt: Codeunit "ADV Json Interface Mgt.";
     begin
-        Error(BlobCompressedFieldsNotSupportedErr);
+        JsonMgt.Initialize();
+        JsonMgt.AddVariable('Method', 'B64.Deflate');
+        JsonMgt.AddVariable('b64string', b64string);
+        if JsonMgt.ExecuteAzureFunction() then
+            JsonMgt.GetVariableTextValue(b64string, 'b64string')
+        else
+            Error(BlobCompressedFieldsNotSupportedErr);
     end;
+
 
 
     [IntegrationEvent(false, false)]
