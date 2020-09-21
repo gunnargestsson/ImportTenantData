@@ -43,6 +43,7 @@ page 60303 "Import Project Data Part"
                 }
                 field("Job Queue Status"; GetJobQueueEntryStatus())
                 {
+                    ApplicationArea = All;
                     Caption = 'Job Queue Status';
                     Editable = false;
                     ToolTip = 'Displays the Job Queue Entry Status, if the data import has been scheduled and is not completed.';
