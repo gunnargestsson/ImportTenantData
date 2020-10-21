@@ -23,7 +23,7 @@ codeunit 60330 "Azure Blob JSON Connect"
             BlobListPage.GetSelection(BlobList);
             ImportProjectData.Init();
             ImportProjectData."Project ID" := ID;
-            ImportFileContent(Setup, BlobList, ImportProjectData);
+            ImportBlobs(Setup, BlobList, ImportProjectData);
             BlobList.Reset();
         end;
     end;
@@ -66,10 +66,7 @@ codeunit 60330 "Azure Blob JSON Connect"
         BlobList.Reset();
     end;
 
-    local procedure ImportFileContent(Setup: Record "Azure Blob Connect Setup"; var BlobList: Record "Azure Blob Connect List"; var ImportProjectData: Record "Import Project Data")
-    var
-        TempBlob: Codeunit "Temp Blob";
-        RecRef: RecordRef;
+    local procedure ImportBlobs(Setup: Record "Azure Blob Connect Setup"; var BlobList: Record "Azure Blob Connect List"; var ImportProjectData: Record "Import Project Data")
     begin
         Window.Open(ImportMsg + '\\#1###################################');
         if BlobList.FindSet() then
@@ -78,13 +75,21 @@ codeunit 60330 "Azure Blob JSON Connect"
                 ImportProjectData."File Name" := BlobList."File Name";
                 ImportProjectData."Last Modified" := CreateDateTime(BlobList."Modified Date", BlobList."Modified Time");
                 ImportProjectData."Content Length" := BlobList."Content Length";
-                GetBlob(Setup, BlobList."File Name", TempBlob);
-                RecRef.GetTable(ImportProjectData);
-                TempBlob.ToRecordRef(RecRef, ImportProjectData.FieldNo(Content));
-                RecRef.Insert(true);
-                Commit();
+                ImportBlobContent(Setup, BlobList, ImportProjectData);
             until BlobList.Next() = 0;
         Window.Close();
+    end;
+
+    local procedure ImportBlobContent(Setup: Record "Azure Blob Connect Setup"; var BlobList: Record "Azure Blob Connect List"; var ImportProjectData: Record "Import Project Data")
+    var
+        TempBlob: Codeunit "Temp Blob";
+        RecRef: RecordRef;
+    begin
+        GetBlob(Setup, BlobList."File Name", TempBlob);
+        RecRef.GetTable(ImportProjectData);
+        TempBlob.ToRecordRef(RecRef, ImportProjectData.FieldNo(Content));
+        RecRef.Insert(true);
+        Commit();
     end;
 
     local procedure GetBlob(Setup: Record "Azure Blob Connect Setup"; FileName: Text; var TempBlob: Codeunit "Temp Blob")

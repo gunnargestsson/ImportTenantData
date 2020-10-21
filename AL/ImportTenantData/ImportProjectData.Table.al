@@ -50,14 +50,14 @@ table 60302 "Import Project Data"
             Caption = 'No. of Table Mappings';
             FieldClass = FlowField;
             Editable = false;
-            CalcFormula = count ("Import Project Table Mapping" where("Project Table ID" = field(ID)));
+            CalcFormula = count("Import Project Table Mapping" where("Project Table ID" = field(ID)));
         }
         field(21; "No. of Field Mappings"; Integer)
         {
             Caption = 'No. of Field Mappings';
             FieldClass = FlowField;
             Editable = false;
-            CalcFormula = count ("Import Project Field Mapping" where("Project Table ID" = field(ID), "Destination Field ID" = filter('>0')));
+            CalcFormula = count("Import Project Field Mapping" where("Project Table ID" = field(ID), "Destination Field ID" = filter('>0')));
         }
         field(30; "Missing Record Handling"; Option)
         {
@@ -79,21 +79,21 @@ table 60302 "Import Project Data"
             Caption = 'Table ID';
             FieldClass = FlowField;
             Editable = false;
-            CalcFormula = lookup ("Import Project Data Info"."Table ID" where(ID = field(ID)));
+            CalcFormula = lookup("Import Project Data Info"."Table ID" where(ID = field(ID)));
         }
         field(43; "Table Name"; Text[30])
         {
             Caption = 'Table Name';
             FieldClass = FlowField;
             Editable = false;
-            CalcFormula = lookup ("Import Project Data Info".Name where(ID = field(ID)));
+            CalcFormula = lookup("Import Project Data Info".Name where(ID = field(ID)));
         }
         field(44; "Table Caption"; Text[50])
         {
             Caption = 'Caption';
             FieldClass = FlowField;
             Editable = false;
-            CalcFormula = lookup ("Import Project Data Info".Caption where(ID = field(ID)));
+            CalcFormula = lookup("Import Project Data Info".Caption where(ID = field(ID)));
         }
     }
 
@@ -163,7 +163,7 @@ table 60302 "Import Project Data"
     var
         InStr: InStream;
     begin
-        Content.CreateInStream(InStr);
+        Content.CreateInStream(InStr, TextEncoding::UTF8);
         XmlDocument.ReadFrom(InStr, Xml);
     end;
 
@@ -175,7 +175,7 @@ table 60302 "Import Project Data"
     begin
         TempBlob.FromRecord(Rec, FieldNo(Content));
         TempBlob.CreateInStream(InStr, TextEncoding::UTF8);
-        Xml := TypeHelper.ReadAsTextWithSeparator(InStr, TypeHelper.LFSeparator());
+        Xml := TypeHelper.ReadAsTextWithSeparator(InStr, '');
         Xml := Xml.Replace('&#x1;', '&lt;C&gt;').Replace('&#x2;', '&lt;D&gt;').Replace('&#x3;', '&lt;WD&gt;').Replace('&#x4;', '&lt;W&gt;').Replace('&#x5;', '&lt;M&gt;').Replace('&#x6;', '&lt;Q&gt;').Replace('&#x7;', '&lt;Y&gt;');
     end;
 

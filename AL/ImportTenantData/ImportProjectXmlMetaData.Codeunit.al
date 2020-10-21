@@ -5,20 +5,21 @@ codeunit 60306 "Import Project Xml MetaData"
     trigger OnRun()
     var
         DataInfo: Record "Import Project Data Info";
+        Xml: XmlDocument;
     begin
-        LoadXmlFromImportData(Rec);
-        LoadTableInfo(Rec, DataInfo);
-        LoadTableFields(Rec, DataInfo);
+        LoadXmlFromImportData(Rec, Xml);
+        LoadTableInfo(Rec, DataInfo, Xml);
+        LoadTableFields(Rec, DataInfo, Xml);
     end;
 
-    local procedure LoadXmlFromImportData(ImportData: Record "Import Project Data")
+    local procedure LoadXmlFromImportData(ImportData: Record "Import Project Data"; var Xml: XmlDocument)
     begin
         if not ImportData.Content.HasValue() then
             error(NoDataFoundErr);
         ImportData.GetXml(Xml);
     end;
 
-    local procedure LoadTableInfo(ImportData: Record "Import Project Data"; var DataInfo: Record "Import Project Data Info")
+    local procedure LoadTableInfo(ImportData: Record "Import Project Data"; var DataInfo: Record "Import Project Data Info"; var Xml: XmlDocument)
     var
         TableNode: XmlNode;
     begin
@@ -34,7 +35,7 @@ codeunit 60306 "Import Project Xml MetaData"
         DataInfo.Insert();
     end;
 
-    local procedure LoadTableFields(ImportData: Record "Import Project Data"; DataInfo: Record "Import Project Data Info")
+    local procedure LoadTableFields(ImportData: Record "Import Project Data"; DataInfo: Record "Import Project Data Info"; var Xml: XmlDocument)
     var
         DataField: Record "Import Project Data Field";
         FieldNodeList: XmlNodeList;
@@ -97,7 +98,6 @@ codeunit 60306 "Import Project Xml MetaData"
 
     var
         NodeMgt: Codeunit "Import Project Node Mgt.";
-        Xml: XmlDocument;
         NoDataFoundErr: Label 'No Xml data found';
 
 }
