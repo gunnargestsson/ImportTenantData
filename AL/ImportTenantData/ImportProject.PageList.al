@@ -49,6 +49,7 @@ page 60300 "Import Project List"
                 Caption = 'Clear Imported Data';
                 ToolTip = 'Clear Imported Data from all projects';
                 Image = DeleteXML;
+                ApplicationArea = All;
                 trigger OnAction()
                 var
                     ProjectData: Record "Import Project Data";
