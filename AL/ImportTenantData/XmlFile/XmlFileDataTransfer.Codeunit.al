@@ -470,6 +470,7 @@ codeunit 60329 "Xml File Data Transfer"
     var
         JsonMgt: Codeunit "ADV Json Interface Mgt.";
     begin
+        if b64string = '' then exit;
         JsonMgt.Initialize();
         JsonMgt.AddVariable('Method', 'B64.Deflate');
         JsonMgt.AddVariable('b64string', b64string);

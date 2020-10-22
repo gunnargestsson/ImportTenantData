@@ -1,0 +1,25 @@
+########### 
+## Test Deflate function
+POST https://proxy.navleiga.is/api/run
+Content-Type: application/json
+
+[
+    {
+        "Method":"B64.Deflate",
+        "b64string":"AkV9W81UTVPCMBC9O+N/6PROk9YWCxPKeEA9AOOABz1GCJCRJkySWvrbPPiT/AumUNrwIeg4zHh8b99md9/u5PP9A7WX8dx6I0JSzlq260DbImzEx5RNW3aiJrXQbkeXF+g2YeMHnMWEKWnpHCabSzlu2TOlFk0A0jR10iuHiynwIHTBU687HM1IjO1STE+La5RJhdmIFFllhnylczwVhDKHSmD0YuveLAsVaAU07MSLOc+IKLDBDIf9KPCh53qe70METL4U93FMonssXhIxEZwp6y4hUs14IgkCq2BRB+wUQh2mBCXSqKuJrIRrgqrsMVuQqKvzK7Sn6fPI9QO4EWloSB70xjjLu3ZDGITXXsNrIFCxhrSnJ5g9EywiD7pBDYYIVNTekzcxT7SRIYRw815BmQ0WYxcRt75S77B7+nxDA6yonquSV2TpGdg27aiHg3/s4c8N9Ornsm+NqpNEwySO8faNrqnzXel6IF3lwFXl7Le+5MGDt2VmIbDb/4mB/n4yVRO/nebAoo/NssGbdelq5UeHzG9QRl8=",
+        "Algorithm":"AES"
+    }
+]
+
+############# 
+## Test Deflate function locally
+POST https://localhost:44360/api/run
+Content-Type: application/json
+
+[
+    {
+        "Method":"B64.Deflate",
+        "b64string":"AkV9W81UTVPCMBC9O+N/6PROk9YWCxPKeEA9AOOABz1GCJCRJkySWvrbPPiT/AumUNrwIeg4zHh8b99md9/u5PP9A7WX8dx6I0JSzlq260DbImzEx5RNW3aiJrXQbkeXF+g2YeMHnMWEKWnpHCabSzlu2TOlFk0A0jR10iuHiynwIHTBU687HM1IjO1STE+La5RJhdmIFFllhnylczwVhDKHSmD0YuveLAsVaAU07MSLOc+IKLDBDIf9KPCh53qe70METL4U93FMonssXhIxEZwp6y4hUs14IgkCq2BRB+wUQh2mBCXSqKuJrIRrgqrsMVuQqKvzK7Sn6fPI9QO4EWloSB70xjjLu3ZDGITXXsNrIFCxhrSnJ5g9EywiD7pBDYYIVNTekzcxT7SRIYRw815BmQ0WYxcRt75S77B7+nxDA6yonquSV2TpGdg27aiHg3/s4c8N9Ornsm+NqpNEwySO8faNrqnzXel6IF3lwFXl7Le+5MGDt2VmIbDb/4mB/n4yVRO/nebAoo/NssGbdelq5UeHzG9QRl8=",
+        "Algorithm":"AES"
+    }
+]
