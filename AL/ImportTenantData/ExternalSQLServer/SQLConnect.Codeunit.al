@@ -22,6 +22,7 @@ codeunit 60340 "SQL Connect"
         CloseConnection(SQLConnection);
         while true do begin
             if BlobList.IsEmpty() then exit;
+            RemoveDuplicates(Rec, SQLCompanyName, BlobList);
             Clear(BlobListPage);
             BlobListPage.Set(BlobList);
             BlobListPage.LookupMode(true);
@@ -89,6 +90,19 @@ codeunit 60340 "SQL Connect"
         if CompanySelection.RunModal() <> Action::LookupOK then exit('');
         CompanySelection.GetSelection(CompanyList);
         SQLCompanyName := CopyStr(CompanyList.Name, 1, MaxStrLen(SQLCompanyName));
+    end;
+
+    local procedure RemoveDuplicates(Project: Record "Import Project"; SQLCompanyName: Text[30]; var BlobList: Record "Name/Value Buffer")
+    var
+        ImportProjectData: Record "Import Project Data";
+    begin
+        ImportProjectData.SetRange("Project ID", Project.ID);
+        if ImportProjectData.FindSet() then
+            repeat
+                BlobList.SetRange(Name, StrSubStNo('%1$%2', SQLCompanyName, ImportProjectData."File Name"));
+                BlobList.DeleteAll();
+            until ImportProjectData.Next() = 0;
+        BlobList.Reset();
     end;
 
     local procedure ImportFileList(var SQLConnection: DotNet O4N_SqlConnection; SQLCompanyName: Text[30]; var BlobList: Record "Name/Value Buffer" temporary)
