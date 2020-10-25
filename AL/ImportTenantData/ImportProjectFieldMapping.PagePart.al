@@ -29,6 +29,7 @@ page 60311 "Import Project Field Map. Part"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value of the Destination Field ID field';
+                    LookupPageId = "Fields Selection List";
                 }
                 field("Destination Field Name"; "Destination Field Name")
                 {

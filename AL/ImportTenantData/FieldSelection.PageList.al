@@ -12,6 +12,12 @@ page 60304 "Fields Selection List"
             repeater(Control2)
             {
                 ShowCaption = false;
+                field("No."; Rec."No.")
+                {
+                    Caption = 'No.';
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the field no.';
+                }
                 field(FieldName; FieldName)
                 {
                     ApplicationArea = Basic, Suite;
