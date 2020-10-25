@@ -75,7 +75,9 @@ codeunit 60342 "SQL Connect Data Transfer"
                 UpdateRow := DestRecRef.Find();
                 if not UpdateRow then
                     DestRecRef.Init();
+                OnBeforeCopyFields(ImportProjectTableMapping, SQLReader, DestRecRef);
                 CopyFields(ImportProjectTableMapping, SQLReader, DestRecRef);
+                OnAfterCopyFields(ImportProjectTableMapping, SQLReader, DestRecRef);
                 if HasTemplateRecRef then
                     ApplyTemplateRecord(TemplateRecRef, DestRecRef);
                 if UpdateRow then begin
@@ -400,6 +402,18 @@ codeunit 60342 "SQL Connect Data Transfer"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCopyValue(ImportProjectFieldMapping: Record "Import Project Field Mapping"; FieldIndex: Integer; var DestFldRef: FieldRef)
+    begin
+
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCopyFields(ImportProjectTableMapping: Record "Import Project Table Mapping"; SQLReader: DotNet O4N_SqlDataReader; var DestRecRef: RecordRef)
+    begin
+
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFields(ImportProjectTableMapping: Record "Import Project Table Mapping"; SQLReader: DotNet O4N_SqlDataReader; var DestRecRef: RecordRef)
     begin
 
     end;
