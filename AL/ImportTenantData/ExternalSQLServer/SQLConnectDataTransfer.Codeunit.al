@@ -305,7 +305,8 @@ codeunit 60342 "SQL Connect Data Transfer"
 
     local procedure EvaluateFieldValue(ImportFieldType: Text; SQLReader: DotNet O4N_SqlDataReader; FieldIndex: Integer; var DestFldRef: FieldRef)
     var
-        DateformulaType: DateFormula;
+        SqlDecimal: DotNet O4N_SqlDecimal;
+        DateFormulaType: DateFormula;
         DecimalType: Decimal;
         IntType: Integer;
     begin
@@ -325,15 +326,12 @@ codeunit 60342 "SQL Connect Data Transfer"
             FieldType::TIME:
                 DestFldRef.Value := DT2Time(SQLReader.GetDateTime(FieldIndex));
             FieldType::DATEFORMULA:
-                begin
-                    if not Evaluate(DateformulaType, SQLReader.GetString(FieldIndex).Replace('><', ''), 9) then
-                        Clear(DateformulaType);
+                if EvaluateTextToDateFormula(SQLReader.GetString(FieldIndex), DateFormulaType) then
                     DestFldRef.Value := DateformulaType;
-                end;
             FieldType::DECIMAL:
                 begin
-                    DecimalType := SQLReader.GetValue(FieldIndex);
-                    DestFldRef.Value := DecimalType;
+                    SqlDecimal := SQLReader.GetSqlDecimal(FieldIndex);
+                    DestFldRef.Value := SqlDecimal.ToDouble();
                 end;
             FieldType::BOOLEAN:
                 begin
@@ -357,6 +355,39 @@ codeunit 60342 "SQL Connect Data Transfer"
                 Error(FieldTypeNotSupportedErr, UpperCase(Format(DestFldRef.Type())));
 
         end;
+    end;
+
+    local procedure EvaluateTextToDateFormula(DateFormulaText: Text; var DateFormulaType: DateFormula): Boolean
+    var
+        EvaluatedDateFormulaText: TextBuilder;
+        Index: Integer;
+        Ch: Char;
+    begin
+        if DateFormulaText = '' then exit(false);
+        EvaluatedDateFormulaText.Append('<');
+
+        for Index := 1 to StrLen(DateFormulaText) do begin
+            Ch := DateFormulaText[Index];
+            case Ch of
+                1:
+                    EvaluatedDateFormulaText.Append('C>');
+                2:
+                    EvaluatedDateFormulaText.Append('D>');
+                3:
+                    EvaluatedDateFormulaText.Append('WD>');
+                4:
+                    EvaluatedDateFormulaText.Append('W>');
+                5:
+                    EvaluatedDateFormulaText.Append('M>');
+                6:
+                    EvaluatedDateFormulaText.Append('Q>');
+                7:
+                    EvaluatedDateFormulaText.Append('Y>');
+                else
+                    EvaluatedDateFormulaText.Append(Ch);
+            end;
+        end;
+        exit(Evaluate(DateFormulaType, EvaluatedDateFormulaText.ToText()));
     end;
 
     local procedure GetBlobValue(SQLReader: DotNet O4N_SqlDataReader; FieldIndex: Integer; Compressed: Boolean; var TempBlob: Codeunit "Temp Blob")
