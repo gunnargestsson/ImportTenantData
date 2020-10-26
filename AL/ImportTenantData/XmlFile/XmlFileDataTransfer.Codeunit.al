@@ -70,14 +70,18 @@ codeunit 60329 "Xml File Data Transfer"
             Counter += 1;
             if (Counter >= ImportProjectTableMapping."No. of Imported Records") or not ResumeTransfer then begin
                 DestRecRef := InitDestRecRef.Duplicate();
+                OnBeforeRecordProcess(ImportProjectTableMapping, SrcRowList, DestRecRef);
                 DestRecRef.LockTable(true);
                 PopulatePrimaryKey(ImportProjectData.ID, SrcRow, DestRecRef);
                 UpdateRow := DestRecRef.Find();
                 if not UpdateRow then
                     DestRecRef.Init();
+                OnBeforeCopyFields(ImportProjectTableMapping, SrcRowList, DestRecRef);
                 CopyFields(ImportProjectTableMapping, SrcRow, DestRecRef);
+                OnAfterCopyFields(ImportProjectTableMapping, SrcRowList, DestRecRef);
                 if HasTemplateRecRef then
                     ApplyTemplateRecord(TemplateRecRef, DestRecRef);
+                OnAfterRecordProcess(ImportProjectTableMapping, SrcRowList, DestRecRef);
                 if UpdateRow then begin
                     OnBeforeModify(ImportProjectTableMapping, SrcRow, DestRecRef);
                     DestRecRef.Modify();
@@ -483,6 +487,33 @@ codeunit 60329 "Xml File Data Transfer"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCopyValue(ImportProjectFieldMapping: Record "Import Project Field Mapping"; SrcFldValueAsText: Text; var DestFldRef: FieldRef)
+    begin
+
+    end;
+
+
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCopyFields(ImportProjectTableMapping: Record "Import Project Table Mapping"; SrcRowList: XmlNodeList; var DestRecRef: RecordRef)
+    begin
+
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFields(ImportProjectTableMapping: Record "Import Project Table Mapping"; SrcRowList: XmlNodeList; var DestRecRef: RecordRef)
+    begin
+
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeRecordProcess(ImportProjectTableMapping: Record "Import Project Table Mapping"; SrcRowList: XmlNodeList; var DestRecRef: RecordRef)
+    begin
+
+    end;
+
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterRecordProcess(ImportProjectTableMapping: Record "Import Project Table Mapping"; SrcRowList: XmlNodeList; var DestRecRef: RecordRef)
     begin
 
     end;

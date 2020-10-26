@@ -64,12 +64,12 @@ codeunit 60342 "SQL Connect Data Transfer"
     begin
         Total := InitializeReferences(ImportProjectData, ImportProjectTableMapping, SQLReader, InitDestRecRef);
         if Total = 0 then exit;
-
+        OnBeforeTableProcess(ImportProjectTableMapping, SQLConnection);
         while SQLReader.Read() do begin
             Counter += 1;
             if (Counter >= ImportProjectTableMapping."No. of Imported Records") or not ResumeTransfer then begin
                 DestRecRef := InitDestRecRef.Duplicate();
-                OnBeforeTableProcess(ImportProjectTableMapping, SQLConnection, SQLReader, DestRecRef);
+                OnBeforeRecordProcess(ImportProjectTableMapping, SQLConnection, SQLReader, DestRecRef);
                 DestRecRef.LockTable(true);
                 PopulatePrimaryKey(ImportProjectData.ID, SQLReader, DestRecRef);
                 UpdateRow := DestRecRef.Find();
@@ -80,6 +80,7 @@ codeunit 60342 "SQL Connect Data Transfer"
                 OnAfterCopyFields(ImportProjectTableMapping, SQLReader, DestRecRef);
                 if HasTemplateRecRef then
                     ApplyTemplateRecord(TemplateRecRef, DestRecRef);
+                OnAfterRecordProcess(ImportProjectTableMapping, SQLConnection, SQLReader, DestRecRef);
                 if UpdateRow then begin
                     OnBeforeModify(ImportProjectTableMapping, SQLReader, DestRecRef);
                     DestRecRef.Modify();
@@ -88,12 +89,12 @@ codeunit 60342 "SQL Connect Data Transfer"
                         OnBeforeInsert(ImportProjectTableMapping, SQLReader, DestRecRef);
                         if DestRecRef.Insert() then;
                     end;
-                OnAfterTableProcess(ImportProjectTableMapping, SQLConnection, SQLReader, DestRecRef);
                 UpdateImportedRecords(ImportProjectData, ImportProjectTableMapping, Counter, Total);
             end;
             if Counter MOD 100 = 0 then
                 Window.Update(3, StrSubStNo('%1 / %2', Counter, Total));
         end;
+        OnAfterTableProcess(ImportProjectTableMapping, SQLConnection);
         ImportProjectTableMapping.Modify();
     end;
 
@@ -417,19 +418,25 @@ codeunit 60342 "SQL Connect Data Transfer"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeTableProcess(ImportProjectTableMapping: Record "Import Project Table Mapping"; SQLConnection: DotNet O4N_SqlConnection; SQLReader: DotNet O4N_SqlDataReader;
-
-    var
-        DestRecRef: RecordRef)
+    local procedure OnBeforeRecordProcess(ImportProjectTableMapping: Record "Import Project Table Mapping"; SQLConnection: DotNet O4N_SqlConnection; SQLReader: DotNet O4N_SqlDataReader; var DestRecRef: RecordRef)
     begin
 
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterTableProcess(ImportProjectTableMapping: Record "Import Project Table Mapping"; SQLConnection: DotNet O4N_SqlConnection; SQLReader: DotNet O4N_SqlDataReader;
+    local procedure OnAfterRecordProcess(ImportProjectTableMapping: Record "Import Project Table Mapping"; SQLConnection: DotNet O4N_SqlConnection; SQLReader: DotNet O4N_SqlDataReader; var DestRecRef: RecordRef)
+    begin
 
-    var
-        DestRecRef: RecordRef)
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeTableProcess(ImportProjectTableMapping: Record "Import Project Table Mapping"; SQLConnection: DotNet O4N_SqlConnection)
+    begin
+
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterTableProcess(ImportProjectTableMapping: Record "Import Project Table Mapping"; SQLConnection: DotNet O4N_SqlConnection)
     begin
 
     end;
