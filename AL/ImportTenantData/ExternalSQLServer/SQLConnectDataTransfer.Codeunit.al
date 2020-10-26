@@ -64,12 +64,12 @@ codeunit 60342 "SQL Connect Data Transfer"
     begin
         Total := InitializeReferences(ImportProjectData, ImportProjectTableMapping, SQLReader, InitDestRecRef);
         if Total = 0 then exit;
-        OnBeforeTableProcess(ImportProjectTableMapping, SQLConnection, SQLReader, DestRecRef);
 
         while SQLReader.Read() do begin
             Counter += 1;
             if (Counter >= ImportProjectTableMapping."No. of Imported Records") or not ResumeTransfer then begin
                 DestRecRef := InitDestRecRef.Duplicate();
+                OnBeforeTableProcess(ImportProjectTableMapping, SQLConnection, SQLReader, DestRecRef);
                 DestRecRef.LockTable(true);
                 PopulatePrimaryKey(ImportProjectData.ID, SQLReader, DestRecRef);
                 UpdateRow := DestRecRef.Find();
@@ -88,14 +88,12 @@ codeunit 60342 "SQL Connect Data Transfer"
                         OnBeforeInsert(ImportProjectTableMapping, SQLReader, DestRecRef);
                         if DestRecRef.Insert() then;
                     end;
-
+                OnAfterTableProcess(ImportProjectTableMapping, SQLConnection, SQLReader, DestRecRef);
                 UpdateImportedRecords(ImportProjectData, ImportProjectTableMapping, Counter, Total);
             end;
-
             if Counter MOD 100 = 0 then
                 Window.Update(3, StrSubStNo('%1 / %2', Counter, Total));
         end;
-        OnAfterTableProcess(ImportProjectTableMapping, SQLConnection, SQLReader, DestRecRef);
         ImportProjectTableMapping.Modify();
     end;
 
