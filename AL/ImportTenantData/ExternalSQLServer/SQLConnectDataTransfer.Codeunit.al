@@ -305,9 +305,7 @@ codeunit 60342 "SQL Connect Data Transfer"
 
     local procedure EvaluateFieldValue(ImportFieldType: Text; SQLReader: DotNet O4N_SqlDataReader; FieldIndex: Integer; var DestFldRef: FieldRef)
     var
-        SqlDecimal: DotNet O4N_SqlDecimal;
         DateFormulaType: DateFormula;
-        DecimalType: Decimal;
         IntType: Integer;
     begin
         if ImportFieldType in ['DateTime', 'Date', 'Time'] then
@@ -329,10 +327,8 @@ codeunit 60342 "SQL Connect Data Transfer"
                 if EvaluateTextToDateFormula(SQLReader.GetString(FieldIndex), DateFormulaType) then
                     DestFldRef.Value := DateformulaType;
             FieldType::DECIMAL:
-                begin
-                    SqlDecimal := SQLReader.GetSqlDecimal(FieldIndex);
-                    DestFldRef.Value := SqlDecimal.ToDouble();
-                end;
+                if not EvaluateDecimal(SQLReader.GetSqlDecimal(FieldIndex), DestFldRef) then
+                    EvaluateDecimalAsText(SQLReader.GetSqlDecimal(FieldIndex), DestFldRef);
             FieldType::BOOLEAN:
                 begin
                     IntType := SQLReader.GetValue(FieldIndex);
@@ -355,6 +351,21 @@ codeunit 60342 "SQL Connect Data Transfer"
                 Error(FieldTypeNotSupportedErr, UpperCase(Format(DestFldRef.Type())));
 
         end;
+    end;
+
+    [TryFunction]
+    local procedure EvaluateDecimal(SqlDecimal: DotNet O4N_SqlDecimal; var FldRef: FieldRef)
+    begin
+        FldRef.Value(SqlDecimal.ToDouble());
+    end;
+
+    [TryFunction]
+    local procedure EvaluateDecimalAsText(SqlDecimal: DotNet O4N_SqlDecimal; var FldRef: FieldRef)
+    var
+        DecimalType: Decimal;
+    begin
+        Evaluate(DecimalType, SqlDecimal.ToString());
+        FldRef.Value(DecimalType);
     end;
 
     local procedure EvaluateTextToDateFormula(DateFormulaText: Text; var DateFormulaType: DateFormula): Boolean
