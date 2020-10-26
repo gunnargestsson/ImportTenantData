@@ -306,6 +306,7 @@ codeunit 60342 "SQL Connect Data Transfer"
     local procedure EvaluateFieldValue(ImportFieldType: Text; SQLReader: DotNet O4N_SqlDataReader; FieldIndex: Integer; var DestFldRef: FieldRef)
     var
         DateformulaType: DateFormula;
+        DecimalType: Decimal;
         IntType: Integer;
     begin
         if ImportFieldType in ['DateTime', 'Date', 'Time'] then
@@ -330,7 +331,10 @@ codeunit 60342 "SQL Connect Data Transfer"
                     DestFldRef.Value := DateformulaType;
                 end;
             FieldType::DECIMAL:
-                DestFldRef.Value := SQLReader.GetDecimal(FieldIndex);
+                begin
+                    DecimalType := SQLReader.GetValue(FieldIndex);
+                    DestFldRef.Value := DecimalType;
+                end;
             FieldType::BOOLEAN:
                 begin
                     IntType := SQLReader.GetValue(FieldIndex);
