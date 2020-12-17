@@ -16,19 +16,19 @@
             "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
             "publisher": "Microsoft",
             "name": "Library Assert",
-            "version": "17.0.0.0"
+            "version": "16.0.0.0"
         },
         {
             "id": "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
             "publisher": "Microsoft",
             "name": "Any",
-            "version": "17.0.0.0"
+            "version": "16.0.0.0"
         },
         {
             "id": "23de40a6-dfe8-4f80-80db-d70f83ce8caf",
             "publisher": "Microsoft",
             "name": "Test Runner",
-            "version": "17.0.0.0"
+            "version": "16.0.0.0"
         },
         {
             "id": "af4bbad8-1e66-4514-acaa-d33413a77b4e",
