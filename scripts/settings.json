@@ -2,20 +2,20 @@
     "name": "TD",
     "appFolders": "AL",
     "testFolders": "ALTests",
-    "launch" :{
-        "startupObjectId":  60300,
-        "startupObjectType":  "Page",
-        "breakOnError":  true
+    "launch": {
+        "startupObjectId": 60300,
+        "startupObjectType": "Page",
+        "breakOnError": true
     },
     "testMethod": {
         "companyName": "CRONUS IS",
         "codeunitId": 0,
         "methodName": ""
     },
-    "versions": [        
+    "versions": [
         {
             "version": "current",
-            "artifact": "bcartifacts.azureedge.net/sandbox//is/Latest",
+            "artifact": "bcartifacts.azureedge.net/onprem/16/is/Latest",
             "imageName": "ci",
             "insiderBuild": false
         },
@@ -47,7 +47,7 @@
                 "Username": "",
                 "Password": ""
             }
-        },        
+        },
         {
             "profile": "Default",
             "navContainerHelperPath": "",
