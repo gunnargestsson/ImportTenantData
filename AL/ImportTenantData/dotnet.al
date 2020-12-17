@@ -2,8 +2,8 @@ dotnet
 {
     assembly("System.Data")
     {
-        Version = "2.0.0.0";
-        
+        Version = "4.0.0.0";
+
         type("System.Data.SqlClient.SqlConnection"; "O4N_SqlConnection") { }
         type("System.Data.SqlClient.SqlCommand"; "O4N_SqlCommand") { }
         type("System.Data.SqlClient.SqlDataReader"; "O4N_SqlDataReader") { }

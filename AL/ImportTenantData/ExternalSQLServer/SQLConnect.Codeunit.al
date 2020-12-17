@@ -18,7 +18,6 @@ codeunit 60340 "SQL Connect"
         SQLCompanyName := SelectCompany(SQLConnection);
         if SQLCompanyName = '' then exit;
         ImportFileList(SQLConnection, SQLCompanyName, BlobList);
-        CloseConnection(SQLConnection);
         while true do begin
             if BlobList.IsEmpty() then exit;
             RemoveDuplicates(Rec, SQLCompanyName, BlobList);
@@ -29,9 +28,10 @@ codeunit 60340 "SQL Connect"
             BlobListPage.GetSelection(BlobList);
             ImportProjectData.Init();
             ImportProjectData."Project ID" := ID;
-            ImportFileContent(SQLConnection,SQLCompanyName, BlobList, ImportProjectData);
+            ImportFileContent(SQLConnection, SQLCompanyName, BlobList, ImportProjectData);
             BlobList.Reset();
         end;
+        CloseConnection(SQLConnection);        
     end;
 
     procedure OpenConnection(Setup: Record "SQL Connect Setup"; var SQLConnection: DotNet O4N_SqlConnection)
@@ -152,7 +152,7 @@ codeunit 60340 "SQL Connect"
         SQLReader: DotNet O4N_SqlDataReader;
         SQLQuery: Text;
     begin
-        SQLQuery := StrSubstNo('SELECT [TABLE_NAME] FROM INFORMATION_SCHEMA.TABLES WHERE [TABLE_NAME] IN (N''%2'',N''%1$%2'')', SQLCompanyName, SQLTableName);
+        SQLQuery := StrSubstNo('SELECT [TABLE_NAME] FROM INFORMATION_SCHEMA.TABLES WHERE [TABLE_NAME] IN (''%2'',''%1$%2'')', GetSQLTableName(SQLCompanyName), GetSQLTableName(SQLTableName));
         ExecuteReader(SQLConnection, SQLQuery, SQLReader);
         SQLReader.Read();
         TableName := CopyStr(SQLReader.GetString(0), 1, MaxStrLen(TableName));
