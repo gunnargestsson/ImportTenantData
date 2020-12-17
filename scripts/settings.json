@@ -2,32 +2,32 @@
     "name": "TD",
     "appFolders": "AL",
     "testFolders": "ALTests",
-    "launch" :{
-        "startupObjectId":  60300,
-        "startupObjectType":  "Page",
-        "breakOnError":  true
+    "launch": {
+        "startupObjectId": 60300,
+        "startupObjectType": "Page",
+        "breakOnError": true
     },
     "testMethod": {
         "companyName": "CRONUS IS",
         "codeunitId": 0,
         "methodName": ""
     },
-    "versions": [        
+    "versions": [
         {
             "version": "current",
-            "artifact": "bcartifacts.azureedge.net/sandbox//is/Latest",
+            "artifact": "bcartifacts.azureedge.net/onprem//is/Latest",
             "imageName": "ci",
             "insiderBuild": false
         },
         {
             "version": "nextminor",
-            "artifact": "bcinsider/sandbox//is/SecondToLastMajor",
+            "artifact": "bcinsider/onprem//is/SecondToLastMajor",
             "imageName": "nextminor",
             "insiderBuild": true
         },
         {
             "version": "nextmajor",
-            "artifact": "bcinsider/sandbox//is/Latest",
+            "artifact": "bcinsider/onprem//is/Latest",
             "imageName": "nextmajor",
             "insiderBuild": true
         }
@@ -47,7 +47,7 @@
                 "Username": "",
                 "Password": ""
             }
-        },        
+        },
         {
             "profile": "Default",
             "navContainerHelperPath": "",

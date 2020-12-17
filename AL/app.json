@@ -23,5 +23,6 @@
   ],
   "contextSensitiveHelpUrl": "https://AL.com/help/",
   "showMyCode": true,
+  "runtime": "6.0",
   "features": ["TranslationFile"]
 }
