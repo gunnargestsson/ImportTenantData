@@ -1,6 +1,5 @@
 codeunit 60340 "SQL Connect"
 {
-    // Server=host.containerhelper.internal;Database=PMNAV_CustomData;User Id=sa;Password=Nav.2018.is;
     TableNo = "Import Project";
     trigger OnRun()
     var
@@ -30,7 +29,7 @@ codeunit 60340 "SQL Connect"
             BlobListPage.GetSelection(BlobList);
             ImportProjectData.Init();
             ImportProjectData."Project ID" := ID;
-            ImportFileContent(SQLCompanyName, BlobList, ImportProjectData);
+            ImportFileContent(SQLConnection,SQLCompanyName, BlobList, ImportProjectData);
             BlobList.Reset();
         end;
     end;
@@ -72,6 +71,7 @@ codeunit 60340 "SQL Connect"
         SQLTableName := ConvertStr(TableName, '."\/%][''', '________');
     end;
 
+
     local procedure SelectCompany(var SQLConnection: DotNet O4N_SqlConnection) SQLCompanyName: Text[30]
     var
         CompanyList: Record "Name/Value Buffer" temporary;
@@ -97,12 +97,12 @@ codeunit 60340 "SQL Connect"
         ImportProjectData: Record "Import Project Data";
     begin
         ImportProjectData.SetRange("Project ID", Project.ID);
-        if ImportProjectData.FindSet() then
+        if BlobList.FindSet() then
             repeat
-                BlobList.SetRange(Name, StrSubStNo('%1$%2', SQLCompanyName, ImportProjectData."File Name"));
-                BlobList.DeleteAll();
-            until ImportProjectData.Next() = 0;
-        BlobList.Reset();
+                ImportProjectData.SetFilter("File Name", '%1|%2', BlobList.Name, StrSubStNo('%1$%2', SQLCompanyName, BlobList.Name));
+                if not ImportProjectData.IsEmpty() then
+                    BlobList.Delete();
+            until BlobList.Next() = 0;
     end;
 
     local procedure ImportFileList(var SQLConnection: DotNet O4N_SqlConnection; SQLCompanyName: Text[30]; var BlobList: Record "Name/Value Buffer" temporary)
@@ -130,13 +130,13 @@ codeunit 60340 "SQL Connect"
         exit(TypeHelper.ReadAsTextWithSeparator(InStr, TypeHelper.LFSeparator()));
     end;
 
-    local procedure ImportFileContent(SQLCompanyName: Text[30]; var BlobList: Record "Name/Value Buffer"; var ImportProjectData: Record "Import Project Data")
+    local procedure ImportFileContent(var SQLConnection: DotNet O4N_SqlConnection; SQLCompanyName: Text[30]; var BlobList: Record "Name/Value Buffer"; var ImportProjectData: Record "Import Project Data")
     var
         OutStr: OutStream;
     begin
         if BlobList.FindSet() then
             repeat
-                ImportProjectData."File Name" := CopyStr(StrSubStNo('%1$%2', SQLCompanyName, BlobList."Name"), 1, MaxStrLen(ImportProjectData."File Name"));
+                ImportProjectData."File Name" := GetTableName(SQLConnection, SQLCompanyName, BlobList.Name);
                 Clear(ImportProjectData.Content);
                 ImportProjectData.Content.CreateOutStream(OutStr, TextEncoding::UTF8);
                 OutStr.WriteText(BlobList.GetValue());
@@ -147,6 +147,16 @@ codeunit 60340 "SQL Connect"
         BlobList.DeleteAll();
     end;
 
+    local procedure GetTableName(var SQLConnection: DotNet O4N_SqlConnection; SQLCompanyName: Text[30]; SQLTableName: Text) TableName: Text[250]
+    var
+        SQLReader: DotNet O4N_SqlDataReader;
+        SQLQuery: Text;
+    begin
+        SQLQuery := StrSubstNo('SELECT [TABLE_NAME] FROM INFORMATION_SCHEMA.TABLES WHERE [TABLE_NAME] IN (N''%2'',N''%1$%2'')', SQLCompanyName, SQLTableName);
+        ExecuteReader(SQLConnection, SQLQuery, SQLReader);
+        SQLReader.Read();
+        TableName := CopyStr(SQLReader.GetString(0), 1, MaxStrLen(TableName));
+    end;
 
     local procedure GetImportSourceId() ImportSourceId: Guid
     begin
