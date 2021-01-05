@@ -407,18 +407,22 @@ codeunit 60342 "SQL Connect Data Transfer"
         DeflateStream: DotNet O4N_DeflateStream;
         StreamReader: DotNet O4N_StreamReader;
         CompressionMode: DotNet O4N_CompressionMode;
+        SqlBytes: DotNet O4N_SqlBytes;
         OutStr: OutStream;
     begin
         if SQLReader.IsDBNull(FieldIndex) then exit;
-        MemoryStream := MemoryStream.MemoryStream(SQLReader.GetSqlBytes(FieldIndex).Value());
-        if MemoryStream.Length() = 0 then exit;
+        SqlBytes := SQLReader.GetSqlBytes(FieldIndex);
+        if SqlBytes.Length() = 0 then exit;
         TempBlob.CreateOutStream(OutStr);
         if Compressed then begin
+            MemoryStream := MemoryStream.MemoryStream();
+            MemoryStream.Write(SqlBytes."Value", 4, SqlBytes.Length - 4);
+            MemoryStream.Seek(0, 0);
             DeflateStream := DeflateStream.DeflateStream(MemoryStream, CompressionMode.Decompress);
             StreamReader := StreamReader.StreamReader(DeflateStream);
             StreamReader.BaseStream.CopyTo(OutStr);
         end else
-            CopyStream(OutStr, MemoryStream);
+            CopyStream(OutStr, SqlBytes.Stream);
     end;
 
     [IntegrationEvent(false, false)]

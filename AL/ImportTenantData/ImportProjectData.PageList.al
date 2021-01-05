@@ -4,8 +4,7 @@ page 60302 "Import Project Data List"
     PageType = List;
     SourceTable = "Import Project Data";
     Caption = 'Import Project Data List';
-    ApplicationArea = All;
-    UsageCategory = Lists;
+    UsageCategory = None;
     Editable = false;
 
     layout

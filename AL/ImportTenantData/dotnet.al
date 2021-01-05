@@ -3,13 +3,14 @@ dotnet
     assembly("System.Data")
     {
         Version = "2.0.0.0";
-        
+
         type("System.Data.SqlClient.SqlConnection"; "O4N_SqlConnection") { }
         type("System.Data.SqlClient.SqlCommand"; "O4N_SqlCommand") { }
         type("System.Data.SqlClient.SqlDataReader"; "O4N_SqlDataReader") { }
         type("System.Data.SqlClient.SqlInfoMessageEventArgs"; "O4N_SqlInfoMessageEventArgs") { }
         type("System.Data.StateChangeEventArgs"; "O4N_StateChangeEventArgs") { }
         type("System.Data.SqlTypes.SqlDecimal"; "O4N_SqlDecimal") { }
+        type("System.Data.SqlTypes.SqlBytes"; "O4N_SqlBytes") { }
     }
     assembly("System")
     {
