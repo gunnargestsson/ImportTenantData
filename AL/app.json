@@ -2,7 +2,7 @@
   "id": "af4bbad8-1e66-4514-acaa-d33413a77b4e",
   "name": "Import Tenant Data",
   "publisher": "Navision.guru",
-  "version": "17.0.0.0",
+  "version": "17.2.0.0",
   "brief": "Import Tenant Data created by AdvaniaGIT",
   "description": "Xml files created by the AdvaniaGIT module and exported from the NAV tenant database can be imported into Business Central via the Rapid-Start interface",
   "privacyStatement": "",

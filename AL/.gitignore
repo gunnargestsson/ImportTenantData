@@ -1,0 +1,5 @@
+*.app
+*.g.xlf
+rad.json
+cache*.json
+TestResults.xml
