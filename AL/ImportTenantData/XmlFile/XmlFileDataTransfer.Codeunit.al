@@ -447,6 +447,8 @@ codeunit 60329 "Xml File Data Transfer"
         CompressedBlob: Codeunit "Temp Blob";
         TempBlob: Codeunit "Temp Blob";
         Base64: Codeunit "Base64 Convert";
+        CompressedStream: Dotnet O4N_MemoryStream;
+        MemoryStream: Dotnet O4N_MemoryStream;
         DeflateStream: DotNet O4N_DeflateStream;
         StreamReader: DotNet O4N_StreamReader;
         CompressionMode: DotNet O4N_CompressionMode;
@@ -455,10 +457,13 @@ codeunit 60329 "Xml File Data Transfer"
     begin
         if b64string = '' then exit;
         CompressedBlob.CreateOutStream(OutStr);
-        Base64.FromBase64(b64string, OutStr);
-        if CompressedBlob.Length() = 0 then exit;
-        CompressedBlob.CreateInStream(InStr);
-        DeflateStream := DeflateStream.DeflateStream(InStr, CompressionMode.Decompress);
+        CompressedStream := CompressedStream.MemoryStream();
+        Base64.FromBase64(b64string, CompressedStream);
+        if CompressedStream.Length() = 0 then exit;
+        MemoryStream := MemoryStream.MemoryStream();
+        MemoryStream.Write(CompressedStream.ToArray(), 4, CompressedStream.Length() - 4);
+        MemoryStream.Seek(0, 0);
+        DeflateStream := DeflateStream.DeflateStream(MemoryStream, CompressionMode.Decompress);
         StreamReader := StreamReader.StreamReader(DeflateStream);
         TempBlob.CreateOutStream(OutStr);
         StreamReader.BaseStream.CopyTo(OutStr);
