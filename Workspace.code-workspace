@@ -4,10 +4,10 @@
 			"path": "AL"
 		},
 		{
-			"path": "scripts"
+			"path": "ALTests"
 		},
 		{
-			"path": "ALTests"
+			"path": ".azureDevOps"
 		}
 	],
 	"settings": {}
