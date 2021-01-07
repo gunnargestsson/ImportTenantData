@@ -15,21 +15,8 @@
     "versions": [
         {
             "version": "current",
-            "artifact": "bcartifacts.azureedge.net/sandbox//w1/latest",
-            "imageName": "ci",
-            "insiderBuild": false
-        },
-        {
-            "version": "nextminor",
-            "artifact": "bcinsider/sandbox//w1/SecondToLastMajor",
-            "imageName": "cu",
-            "insiderBuild": true
-        },
-        {
-            "version": "nextmajor",
-            "artifact": "bcinsider/sandbox//w1/Latest",
-            "imageName": "rtm",
-            "insiderBuild": true
+            "artifact": "bcartifacts.azureedge.net/onprem/16/w1/latest",
+            "imageName": "ci"
         }
     ],
     "validation": [
