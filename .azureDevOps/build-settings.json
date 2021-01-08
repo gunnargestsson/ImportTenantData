@@ -12,6 +12,9 @@
         "codeunitId": 0,
         "methodName": ""
     },
+    "includeTestLibrariesOnly": false,
+    "includeTestFrameworkOnly": true,
+    "testToolkitCountry": "",
     "versions": [
         {
             "version": "current",
