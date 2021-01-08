@@ -4,9 +4,7 @@ page 60346 "SQL Connect Table Selection"
     Caption = 'Table Selection';
     SourceTable = "Name/Value Buffer";
     SourceTableTemporary = true;
-    #pragma warning disable
     SourceTableView = sorting("Name");
-    #pragma warning enable
     UsageCategory = None;
     Editable = false;
 
