@@ -7,6 +7,9 @@
         "azureStorageAccount": "365bcfiles",
         "azureContainerName": "artifacts"
     },
+    "includeTestLibrariesOnly": false,
+    "includeTestFrameworkOnly": true,
+    "testToolkitCountry": "",
     "testMethod": {
         "companyName": "CRONUS International",
         "codeunitId": 0,

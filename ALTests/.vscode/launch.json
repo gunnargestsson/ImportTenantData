@@ -6,11 +6,11 @@
                                "request":  "launch",
                                "name":  "Local Sandbox (TD-dev)",
                                "server":  "https://traefik.kappi.is",                               
-                               "serverInstance":  "sandboxdev",
+                               "serverInstance":  "sandboxv16dev",
                                "port":  443,
                                "tenant":  "default",
                                "authentication":  "UserPassword",
-                               "startupObjectId":  130451,
+                               "startupObjectId":  60300,
                                "startupObjectType":  "Page",
                                "breakOnError":  true
                            }
