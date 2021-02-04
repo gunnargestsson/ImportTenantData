@@ -404,7 +404,7 @@ codeunit 60329 "Xml File Data Transfer"
                         IntegerType := 0;
                     DestFldRef.Value := IntegerType;
                 end;
-            FieldType::BIGINTEGER:
+            FieldType::BIGINTEGER, FieldType::Duration:
                 begin
                     if FieldValue <> '' then
                         Evaluate(BigIntegerType, FieldValue, 9)

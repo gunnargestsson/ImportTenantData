@@ -341,7 +341,7 @@ codeunit 60342 "SQL Connect Data Transfer"
                 end;
             FieldType::INTEGER:
                 DestFldRef.Value := SQLReader.GetInt32(FieldIndex);
-            FieldType::BIGINTEGER:
+            FieldType::BIGINTEGER, FieldType::Duration:
                 DestFldRef.Value := SQLReader.GetInt64(FieldIndex);
             FieldType::GUID:
                 DestFldRef.Value := SQLReader.GetGuid(FieldIndex);
