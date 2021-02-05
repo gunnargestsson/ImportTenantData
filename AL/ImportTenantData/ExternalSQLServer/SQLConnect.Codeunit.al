@@ -31,7 +31,7 @@ codeunit 60340 "SQL Connect"
             ImportFileContent(SQLConnection, SQLCompanyName, BlobList, ImportProjectData);
             BlobList.Reset();
         end;
-        CloseConnection(SQLConnection);        
+        CloseConnection(SQLConnection);
     end;
 
     procedure OpenConnection(Setup: Record "SQL Connect Setup"; var SQLConnection: DotNet O4N_SqlConnection)
@@ -105,7 +105,7 @@ codeunit 60340 "SQL Connect"
             until BlobList.Next() = 0;
     end;
 
-    local procedure ImportFileList(var SQLConnection: DotNet O4N_SqlConnection; SQLCompanyName: Text[30]; var BlobList: Record "Name/Value Buffer" temporary)
+    procedure ImportFileList(var SQLConnection: DotNet O4N_SqlConnection; SQLCompanyName: Text[30]; var BlobList: Record "Name/Value Buffer" temporary)
     var
         SQLReader: DotNet O4N_SqlDataReader;
     begin
@@ -116,7 +116,7 @@ codeunit 60340 "SQL Connect"
         SQLReader.Close();
     end;
 
-    local procedure FromBase64(Base64Text: Text): Text
+    procedure FromBase64(Base64Text: Text): Text
     var
         TempBlob: Codeunit "Temp Blob";
         TypeHelper: Codeunit "Type Helper";
@@ -130,7 +130,7 @@ codeunit 60340 "SQL Connect"
         exit(TypeHelper.ReadAsTextWithSeparator(InStr, TypeHelper.LFSeparator()));
     end;
 
-    local procedure ImportFileContent(var SQLConnection: DotNet O4N_SqlConnection; SQLCompanyName: Text[30]; var BlobList: Record "Name/Value Buffer"; var ImportProjectData: Record "Import Project Data")
+    procedure ImportFileContent(var SQLConnection: DotNet O4N_SqlConnection; SQLCompanyName: Text[30]; var BlobList: Record "Name/Value Buffer"; var ImportProjectData: Record "Import Project Data")
     var
         OutStr: OutStream;
     begin
@@ -147,7 +147,7 @@ codeunit 60340 "SQL Connect"
         BlobList.DeleteAll();
     end;
 
-    local procedure GetTableName(var SQLConnection: DotNet O4N_SqlConnection; SQLCompanyName: Text[30]; SQLTableName: Text) TableName: Text[250]
+    procedure GetTableName(var SQLConnection: DotNet O4N_SqlConnection; SQLCompanyName: Text[30]; SQLTableName: Text) TableName: Text[250]
     var
         SQLReader: DotNet O4N_SqlDataReader;
         SQLQuery: Text;
@@ -156,6 +156,7 @@ codeunit 60340 "SQL Connect"
         ExecuteReader(SQLConnection, SQLQuery, SQLReader);
         SQLReader.Read();
         TableName := CopyStr(SQLReader.GetString(0), 1, MaxStrLen(TableName));
+        SQLReader.Close();
     end;
 
     local procedure GetImportSourceId() ImportSourceId: Guid

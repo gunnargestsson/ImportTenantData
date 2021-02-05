@@ -21,7 +21,7 @@ codeunit 60322 "Import Project Data Scheduler"
         ScheduleJobQueueEntry(Codeunit::"Import Project Data Transfer", ImportProjectData.RecordId(), SecondsDelay);
     end;
 
-    local procedure ScheduleJobQueueEntry(CodeunitId: Integer; RelatedRecordId: RecordID; SecondsDelay: Integer)
+    procedure ScheduleJobQueueEntry(CodeunitId: Integer; RelatedRecordId: RecordID; SecondsDelay: Integer)
     var
         JobQueueEntry: Record "Job Queue Entry";
     begin
@@ -32,6 +32,7 @@ codeunit 60322 "Import Project Data Scheduler"
         JobQueueEntry."Object ID to Run" := CodeunitId;
         JobQueueEntry."Record ID to Process" := RelatedRecordId;
         JobQueueEntry."Run in User Session" := false;
+        OnBeforeEnqueueJobQueue(JobQueueEntry);
         CODEUNIT.Run(CODEUNIT::"Job Queue - Enqueue", JobQueueEntry);
     end;
 
@@ -43,6 +44,11 @@ codeunit 60322 "Import Project Data Scheduler"
         JobQueueEntry.SetRange("Object ID to Run", CodeunitId);
         JobQueueEntry.SetRange("Record ID to Process", RelatedRecordId);
         exit(not JobQueueEntry.IsEmpty());
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeEnqueueJobQueue(var JobQueueEntry: Record "Job Queue Entry")
+    begin
     end;
 
     var
