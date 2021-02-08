@@ -381,23 +381,24 @@ codeunit 60342 "SQL Connect Data Transfer"
             Ch := DateFormulaText[Index];
             case Ch of
                 1:
-                    EvaluatedDateFormulaText.Append('C>');
+                    EvaluatedDateFormulaText.Append('C');
                 2:
-                    EvaluatedDateFormulaText.Append('D>');
+                    EvaluatedDateFormulaText.Append('D');
                 3:
-                    EvaluatedDateFormulaText.Append('WD>');
+                    EvaluatedDateFormulaText.Append('WD');
                 4:
-                    EvaluatedDateFormulaText.Append('W>');
+                    EvaluatedDateFormulaText.Append('W');
                 5:
-                    EvaluatedDateFormulaText.Append('M>');
+                    EvaluatedDateFormulaText.Append('M');
                 6:
-                    EvaluatedDateFormulaText.Append('Q>');
+                    EvaluatedDateFormulaText.Append('Q');
                 7:
-                    EvaluatedDateFormulaText.Append('Y>');
+                    EvaluatedDateFormulaText.Append('Y');
                 else
                     EvaluatedDateFormulaText.Append(Ch);
             end;
         end;
+        EvaluatedDateFormulaText.Append('>');
         exit(Evaluate(DateFormulaType, EvaluatedDateFormulaText.ToText()));
     end;
 
